@@ -1,56 +1,31 @@
 const scheduleEl = document.getElementById("schedule");
 const todayDateEl = document.getElementById("todayDate");
+const addBtn = document.getElementById("addBtn");
+const modal = document.getElementById("modal");
+const saveBtn = document.getElementById("saveBtn");
 
-const weekdays = [
-  "Воскресенье",
-  "Понедельник",
-  "Вторник",
-  "Среда",
-  "Четверг",
-  "Пятница",
-  "Суббота"
-];
+const titleInput = document.getElementById("titleInput");
+const dayInput = document.getElementById("dayInput");
+const startInput = document.getElementById("startInput");
+const endInput = document.getElementById("endInput");
 
-// Базовое расписание (пример)
-const baseSchedule = {
-  monday: [
-    {
-      id: 1,
-      title: "Математика",
-      start: "09:00",
-      end: "10:30",
-      color: "#5B8DEF"
-    }
-  ]
-};
+const weekdays = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 
-// Исключения
-const exceptions = [
-  {
-    date: "2026-02-17",
-    lessonId: 1,
-    type: "cancel"
-  }
-];
+let baseSchedule = JSON.parse(localStorage.getItem("baseSchedule")) || {};
 
 function getTodayLessons() {
   const now = new Date();
-  const dayKey = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"][now.getDay()];
-  let lessons = baseSchedule[dayKey] || [];
-
-  const todayStr = now.toISOString().split("T")[0];
-
-  return lessons.map(lesson => {
-    const exception = exceptions.find(
-      e => e.date === todayStr && e.lessonId === lesson.id
-    );
-    return { ...lesson, exception };
-  });
+  const dayKey = weekdays[now.getDay()];
+  return baseSchedule[dayKey] || [];
 }
 
 function render() {
   const now = new Date();
-  todayDateEl.textContent = `${weekdays[now.getDay()]}, ${now.toLocaleDateString("ru-RU")}`;
+  todayDateEl.textContent = now.toLocaleDateString("ru-RU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  });
 
   const lessons = getTodayLessons();
   scheduleEl.innerHTML = "";
@@ -63,21 +38,39 @@ function render() {
   lessons.forEach(lesson => {
     const div = document.createElement("div");
     div.className = "lesson";
-
-    if (lesson.exception?.type === "cancel") {
-      div.classList.add("cancelled");
-    }
-
     div.innerHTML = `
-      <div class="color" style="background:${lesson.color}"></div>
+      <div class="color" style="background:#5B8DEF"></div>
       <div class="info">
         <div class="time">${lesson.start} – ${lesson.end}</div>
         <div class="title">${lesson.title}</div>
       </div>
     `;
-
     scheduleEl.appendChild(div);
   });
 }
+
+addBtn.onclick = () => modal.classList.remove("hidden");
+
+saveBtn.onclick = () => {
+  const lesson = {
+    title: titleInput.value,
+    start: startInput.value,
+    end: endInput.value
+  };
+
+  if (!baseSchedule[dayInput.value]) {
+    baseSchedule[dayInput.value] = [];
+  }
+
+  baseSchedule[dayInput.value].push(lesson);
+  localStorage.setItem("baseSchedule", JSON.stringify(baseSchedule));
+
+  modal.classList.add("hidden");
+  titleInput.value = "";
+  startInput.value = "";
+  endInput.value = "";
+
+  render();
+};
 
 render();
