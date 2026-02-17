@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Моё расписание</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <h1>Сегодня</h1>
+    <div id="todayDate"></div>
+  </header>
+
+  <main id="schedule"></main>
+
+  <button id="addBtn">＋</button>
+
+  <script src="app.js"></script>
+</body>
+</html>

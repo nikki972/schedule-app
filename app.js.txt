@@ -1,0 +1,83 @@
+const scheduleEl = document.getElementById("schedule");
+const todayDateEl = document.getElementById("todayDate");
+
+const weekdays = [
+  "Воскресенье",
+  "Понедельник",
+  "Вторник",
+  "Среда",
+  "Четверг",
+  "Пятница",
+  "Суббота"
+];
+
+// Базовое расписание (пример)
+const baseSchedule = {
+  monday: [
+    {
+      id: 1,
+      title: "Математика",
+      start: "09:00",
+      end: "10:30",
+      color: "#5B8DEF"
+    }
+  ]
+};
+
+// Исключения
+const exceptions = [
+  {
+    date: "2026-02-17",
+    lessonId: 1,
+    type: "cancel"
+  }
+];
+
+function getTodayLessons() {
+  const now = new Date();
+  const dayKey = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"][now.getDay()];
+  let lessons = baseSchedule[dayKey] || [];
+
+  const todayStr = now.toISOString().split("T")[0];
+
+  return lessons.map(lesson => {
+    const exception = exceptions.find(
+      e => e.date === todayStr && e.lessonId === lesson.id
+    );
+    return { ...lesson, exception };
+  });
+}
+
+function render() {
+  const now = new Date();
+  todayDateEl.textContent = `${weekdays[now.getDay()]}, ${now.toLocaleDateString("ru-RU")}`;
+
+  const lessons = getTodayLessons();
+  scheduleEl.innerHTML = "";
+
+  if (lessons.length === 0) {
+    scheduleEl.innerHTML = "<p>Сегодня занятий нет 🎉</p>";
+    return;
+  }
+
+  lessons.forEach(lesson => {
+    const div = document.createElement("div");
+    div.className = "lesson";
+
+    if (lesson.exception?.type === "cancel") {
+      div.classList.add("cancelled");
+    }
+
+    div.innerHTML = `
+      <div class="color" style="background:${lesson.color}"></div>
+      <div class="info">
+        <div class="time">${lesson.start} – ${lesson.end}</div>
+        <div class="title">${lesson.title}</div>
+      </div>
+    `;
+
+    scheduleEl.appendChild(div);
+  });
+}
+
+render();
