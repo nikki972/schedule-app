@@ -69,3 +69,58 @@ h1 {
   font-size: 32px;
   box-shadow: 0 10px 20px rgba(0,122,255,0.4);
 }
+
+.hidden {
+  display: none;
+}
+
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: #2c2c2e;
+  padding: 20px;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content label {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #3a3a3c;
+  color: #fff;
+}
+
+#saveBtn {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #0a84ff;
+  color: #fff;
+  font-size: 16px;
+}
