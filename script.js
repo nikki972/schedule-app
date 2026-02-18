@@ -14,7 +14,9 @@ const todayScreen = $('todayScreen');
 const allScreen = $('allScreen');
 const analyticsScreen = $('analyticsScreen');
 const studentsScreen = $('studentsScreen');
+
 const title = $('title');
+const todayDate = $('todayDate');
 
 const addBtn = $('addBtn');
 const modal = $('modal');
@@ -37,6 +39,15 @@ function close() {
   overlay.classList.remove('show');
 }
 
+/* ===== ДАТА ===== */
+function formatDate(d) {
+  return d.toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  });
+}
+
 /* ===== ЭКРАНЫ ===== */
 goToday.onclick = () => show('today');
 goAll.onclick = () => show('all');
@@ -52,12 +63,14 @@ function show(screen) {
   if (screen === 'today') {
     todayScreen.classList.remove('hidden');
     title.textContent = 'Сегодня';
+    todayDate.textContent = formatDate(new Date());
     renderToday();
   }
 
   if (screen === 'all') {
     allScreen.classList.remove('hidden');
     title.textContent = 'Все занятия';
+    todayDate.textContent = '';
   }
 
   close();
