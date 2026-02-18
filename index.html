@@ -1,87 +1,56 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Расписание</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расписание</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="dark">
 
-<!-- Затемнение -->
 <div id="overlay"></div>
 
-<!-- Боковое меню -->
 <nav id="sideMenu">
-  <h3>Меню</h3>
+<h3>Меню</h3>
+<button id="goToday" class="menu-btn">📅 Сегодня</button>
+<button id="goAll" class="menu-btn">📋 Все занятия</button>
+<button id="goAnalytics" class="menu-btn">📊 Аналитика</button>
+<button id="goStudents" class="menu-btn">👨‍🎓 Ученики</button>
 
-  <button class="menu-btn">📊 Аналитика доходов</button>
-  <button class="menu-btn">📋 Все занятия</button>
+<div class="menu-divider"></div>
+<button id="menuThemeToggle" class="menu-btn">🌙 Переключить тему</button>
 
-  <div class="menu-divider"></div>
-
-  <button id="menuThemeToggle" class="menu-btn">🌙 Тема</button>
-
-  <div class="menu-divider"></div>
-
-  <button id="closeMenu" class="menu-btn danger">Закрыть</button>
+<div class="menu-divider"></div>
+<button id="closeMenu" class="menu-btn danger">Закрыть</button>
 </nav>
 
 <header>
-  <button id="menuBtn" class="burger">☰</button>
-  <h1>Сегодня</h1>
+<button id="menuBtn" class="burger">☰</button>
+<h1 id="title">Сегодня</h1>
 </header>
 
-<main id="schedule">
-  <p class="empty">Сегодня занятий нет</p>
-</main>
+<main id="todayScreen"></main>
+<main id="allScreen" class="hidden"></main>
+<main id="analyticsScreen" class="hidden"></main>
+<main id="studentsScreen" class="hidden"></main>
 
 <button id="addBtn">＋</button>
 
-<!-- Модальное окно -->
 <div id="modal">
-  <div class="modal-content">
-    <h2>Новое занятие</h2>
+<div class="modal-content">
+<h2>Новое занятие</h2>
 
-    <label>
-      Ученик
-      <select id="student"></select>
-    </label>
+<label>Ученик<select id="student"></select></label>
+<label>Предмет<select id="subject"><option>Математика</option><option>Алгебра</option><option>Геометрия</option><option>Физика</option></select></label>
+<label>Дата<input type="date" id="date"></label>
+<label>Начало<input type="time" id="startTime"></label>
+<label>Стоимость<select id="price"><option value="">По умолчанию</option><option value="700">700 ₽</option><option value="1000">1000 ₽</option></select></label>
 
-    <label>
-      Предмет
-      <select id="subject">
-        <option>Математика</option>
-        <option>Алгебра</option>
-        <option>Геометрия</option>
-        <option>Физика</option>
-      </select>
-    </label>
-
-    <label>
-      Дата
-      <input type="date" id="date">
-    </label>
-
-    <label>
-      Начало
-      <input type="time" id="startTime">
-    </label>
-
-    <label>
-      Стоимость
-      <select id="price">
-        <option value="">По умолчанию</option>
-        <option value="700">700 ₽</option>
-        <option value="1000">1000 ₽</option>
-      </select>
-    </label>
-
-    <div class="buttons">
-      <button id="saveBtn" disabled>Сохранить</button>
-      <button id="cancelBtn">Отмена</button>
-    </div>
-  </div>
+<div class="buttons">
+<button id="saveBtn" disabled>Сохранить</button>
+<button id="cancelBtn">Отмена</button>
+</div>
+</div>
 </div>
 
 <script src="script.js"></script>
