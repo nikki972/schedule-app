@@ -68,7 +68,7 @@ function render() {
 
   todayLessons.forEach(l => {
     const div = document.createElement('div');
-    div.textContent = `${l.start} — ${l.subject} (${l.duration} мин)`;
+    div.textContent = `${l.start} — ${l.subject}`;
     schedule.appendChild(div);
   });
 }
