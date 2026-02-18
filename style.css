@@ -103,4 +103,31 @@ label {
 
 input, select {
   width: 100%;
-  padd
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: none;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+#saveBtn:disabled {
+  opacity: 0.4;
+}
+
+/* --- Аналитика --- */
+.analytics {
+  background: #3a3a3a;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 20px;
+}
+
+#analyticsResult {
+  margin-top: 10px;
+  font-weight: bold;
+}
