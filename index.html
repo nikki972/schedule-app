@@ -37,13 +37,9 @@
 </header>
 
 <main id="todayScreen"></main>
-<main id="allScreen" class="hidden"></main>
-<main id="analyticsScreen" class="hidden"></main>
-<main id="studentsScreen" class="hidden"></main>
 
 <button id="addBtn">＋</button>
 
-<!-- iOS Sheet -->
 <div id="modal">
   <div class="sheet">
     <div class="sheet-header">
@@ -53,28 +49,18 @@
     </div>
 
     <div class="sheet-body">
-      <label>
-        Ученик
-        <input id="student" placeholder="Имя ученика">
-      </label>
+      <label>Ученик<input id="student"></label>
 
       <label>
         Предмет
         <select id="subject">
-          <option value="Математика">Математика</option>
-          <option value="Физика">Физика</option>
+          <option>Математика</option>
+          <option>Физика</option>
         </select>
       </label>
 
-      <label>
-        Дата
-        <input type="date" id="date">
-      </label>
-
-      <label>
-        Время
-        <input type="time" id="time" step="1800">
-      </label>
+      <label>Дата<input type="date" id="date"></label>
+      <label>Время<input type="time" id="time" step="1800"></label>
     </div>
   </div>
 </div>
