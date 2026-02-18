@@ -6,11 +6,12 @@
   <title>Расписание</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="dark">
 
   <header>
     <h1>Сегодня</h1>
     <div id="todayDate"></div>
+    <button id="themeToggle">🌙</button>
   </header>
 
   <main id="schedule">
@@ -26,9 +27,7 @@
 
       <label>
         Ученик
-        <select id="student">
-          <!-- Список учеников добавляется через JS -->
-        </select>
+        <select id="student"></select>
       </label>
 
       <label>
@@ -67,7 +66,7 @@
     </div>
   </div>
 
-  <!-- --- Блок аналитики --- -->
+  <!-- Аналитика дохода -->
   <div id="analytics" class="analytics">
     <h2>Доход</h2>
     <label>
