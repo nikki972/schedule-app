@@ -30,3 +30,6 @@ body.light #sideMenu{background:#fff;}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:999;}
 #overlay.show{display:block;}
 
+.analytics-card,.students-card{padding:16px;margin:16px;}
+.analytics-row,.student-row{margin-top:10px;font-size:16px;}
+.debt{color:#ff7777;}
