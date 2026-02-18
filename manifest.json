@@ -1,15 +1,8 @@
 {
-  "name": "Моё расписание",
+  "name": "Расписание",
   "short_name": "Расписание",
-  "start_url": "index.html",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#f5f5f7",
-  "theme_color": "#ffffff",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "background_color": "#1c1c1e",
+  "theme_color": "#1c1c1e"
 }
