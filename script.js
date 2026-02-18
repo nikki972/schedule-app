@@ -15,33 +15,48 @@ const analyticsDate = document.getElementById('analyticsDate');
 const analyticsResult = document.getElementById('analyticsResult');
 const todayDate = document.getElementById('todayDate');
 
+/* 🔒 ГАРАНТИЯ: модалка закрыта при старте */
+modal.classList.add('hidden');
+
+/* ===== Дата ===== */
 const today = new Date();
 const todayStr = today.toISOString().slice(0,10);
 
 todayDate.textContent = today.toLocaleDateString('ru-RU', {
-  weekday: 'long', day: 'numeric', month: 'long'
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long'
 });
 
 analyticsDate.value = todayStr;
 
+/* ===== Ученики ===== */
 let students = [
-  {id:1, name:"Иван", price:700},
-  {id:2, name:"Мария", price:1000}
+  { id: 1, name: "Иван", price: 700 },
+  { id: 2, name: "Мария", price: 1000 }
 ];
 
-students.forEach(s=>{
-  const o=document.createElement('option');
-  o.value=s.id;
-  o.textContent=s.name;
+studentSelect.innerHTML = '';
+students.forEach(s => {
+  const o = document.createElement('option');
+  o.value = s.id;
+  o.textContent = s.name;
   studentSelect.appendChild(o);
 });
 
-let lessons = JSON.parse(localStorage.getItem('lessons')||'[]');
+/* ===== Данные ===== */
+let lessons = JSON.parse(localStorage.getItem('lessons') || '[]');
 
-addBtn.onclick = ()=> modal.classList.remove('hidden');
-cancelBtn.onclick = ()=> modal.classList.add('hidden');
+/* ===== Кнопки ===== */
+addBtn.onclick = () => {
+  modal.classList.remove('hidden');
+};
 
-function checkForm(){
+cancelBtn.onclick = () => {
+  modal.classList.add('hidden');
+};
+
+function checkForm() {
   saveBtn.disabled = !(studentSelect.value && dateInput.value && timeInput.value);
 }
 
@@ -49,8 +64,10 @@ studentSelect.onchange = checkForm;
 dateInput.oninput = checkForm;
 timeInput.oninput = checkForm;
 
-saveBtn.onclick = ()=>{
-  const student = students.find(s=>s.id==studentSelect.value);
+/* ===== Сохранение ===== */
+saveBtn.onclick = () => {
+  const student = students.find(s => s.id == studentSelect.value);
+
   lessons.push({
     student: student.name,
     subject: subjectSelect.value,
@@ -60,70 +77,55 @@ saveBtn.onclick = ()=>{
     status: 'planned',
     paid: false
   });
-  localStorage.setItem('lessons',JSON.stringify(lessons));
+
+  localStorage.setItem('lessons', JSON.stringify(lessons));
   modal.classList.add('hidden');
   render();
 };
 
-function changeStatus(index){
-  const l = lessons[index];
-
-  if(l.status === 'planned') l.status = 'done';
-  else if(l.status === 'done') l.status = 'cancelled';
-  else if(l.status === 'cancelled') {
-    // 🔁 перенос
-    const newDate = prompt("Новая дата (ГГГГ-ММ-ДД):", l.date);
-    if(!newDate) return;
-
-    const newTime = prompt("Новое время (ЧЧ:ММ):", l.time);
-    if(!newTime) return;
-
-    // старое — перенесено
-    l.status = 'moved';
-
-    // новое занятие
-    lessons.push({
-      ...l,
-      date: newDate,
-      time: newTime,
-      status: 'planned',
-      paid: false
-    });
-  }
-  else l.status = 'planned';
-
-  localStorage.setItem('lessons',JSON.stringify(lessons));
-  render();
+/* ===== Статусы ===== */
+function nextStatus(s) {
+  if (s === 'planned') return 'done';
+  if (s === 'done') return 'cancelled';
+  if (s === 'cancelled') return 'planned';
+  return 'planned';
 }
 
-function render(){
-  schedule.innerHTML='';
-  const todayLessons = lessons
-    .map((l,i)=>({...l,index:i}))
-    .filter(l=>l.date===todayStr);
+/* ===== Рендер ===== */
+function render() {
+  schedule.innerHTML = '';
 
-  if(!todayLessons.length){
-    schedule.innerHTML='<p class="empty">Сегодня занятий нет</p>';
+  const todayLessons = lessons
+    .map((l, i) => ({ ...l, index: i }))
+    .filter(l => l.date === todayStr);
+
+  if (!todayLessons.length) {
+    schedule.innerHTML = '<p class="empty">Сегодня занятий нет</p>';
     return;
   }
 
-  todayLessons.forEach(l=>{
-    const d=document.createElement('div');
-    d.className='lesson';
-    d.dataset.subject=l.subject;
+  todayLessons.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'lesson';
+    d.dataset.subject = l.subject;
 
-    d.innerHTML=`
+    d.innerHTML = `
       <div>${l.time} — ${l.subject} (${l.student})</div>
       <div>
-        <span class="status">${statusIcon(l.status)}</span>
-        <span>${l.paid?'💰':'⏳'}</span>
+        <span class="status">${icon(l.status)}</span>
+        <span>${l.paid ? '💰' : '⏳'}</span>
       </div>
     `;
 
-    d.querySelector('.status').onclick=()=>changeStatus(l.index);
-    d.querySelector('span:last-child').onclick=()=>{
-      lessons[l.index].paid=!lessons[l.index].paid;
-      localStorage.setItem('lessons',JSON.stringify(lessons));
+    d.querySelector('.status').onclick = () => {
+      lessons[l.index].status = nextStatus(l.status);
+      localStorage.setItem('lessons', JSON.stringify(lessons));
+      render();
+    };
+
+    d.querySelector('span:last-child').onclick = () => {
+      lessons[l.index].paid = !lessons[l.index].paid;
+      localStorage.setItem('lessons', JSON.stringify(lessons));
       render();
     };
 
@@ -133,15 +135,16 @@ function render(){
   renderAnalytics();
 }
 
-function statusIcon(s){
-  return s==='done'?'✅':s==='cancelled'?'❌':s==='moved'?'🔁':'🕒';
+function icon(s) {
+  return s === 'done' ? '✅' : s === 'cancelled' ? '❌' : '🕒';
 }
 
-function renderAnalytics(){
-  const d=analyticsDate.value;
-  const done = lessons.filter(l=>l.date===d && l.status==='done');
-  const sum = done.reduce((s,l)=>s+Number(l.price),0);
-  analyticsResult.textContent=`Проведено: ${done.length} | Доход: ${sum} ₽`;
+/* ===== Аналитика ===== */
+function renderAnalytics() {
+  const d = analyticsDate.value;
+  const done = lessons.filter(l => l.date === d && l.status === 'done');
+  const sum = done.reduce((a, b) => a + Number(b.price), 0);
+  analyticsResult.textContent = `Проведено: ${done.length} | Доход: ${sum} ₽`;
 }
 
 analyticsDate.onchange = renderAnalytics;
@@ -149,14 +152,15 @@ analyticsDate.onchange = renderAnalytics;
 /* ===== Тема ===== */
 const savedTheme = localStorage.getItem('theme') || 'dark';
 document.body.className = savedTheme;
-themeToggle.textContent = savedTheme==='dark'?'🌙':'☀️';
+themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
-themeToggle.onclick=()=>{
+themeToggle.onclick = () => {
   document.body.classList.toggle('dark');
   document.body.classList.toggle('light');
-  const t=document.body.classList.contains('dark')?'dark':'light';
-  localStorage.setItem('theme',t);
-  themeToggle.textContent=t==='dark'?'🌙':'☀️';
+  const t = document.body.classList.contains('dark') ? 'dark' : 'light';
+  localStorage.setItem('theme', t);
+  themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
 };
 
+/* ===== Старт ===== */
 render();
