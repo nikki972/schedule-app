@@ -7,6 +7,7 @@ body {
 
 .hidden { display: none; }
 
+/* ===== HEADER ===== */
 header {
   display: flex;
   align-items: center;
@@ -21,6 +22,23 @@ header {
   color: inherit;
 }
 
+.title-block {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+#title {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.date-label {
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+/* ===== MENU ===== */
 #sideMenu {
   position: fixed;
   top: 0;
@@ -57,6 +75,7 @@ header {
 
 #overlay.show { display: block; }
 
+/* ===== LESSON ===== */
 .lesson {
   padding: 12px;
   margin: 10px;
@@ -64,6 +83,7 @@ header {
   border-radius: 8px;
 }
 
+/* ===== FAB ===== */
 #addBtn {
   position: fixed;
   right: 24px;
@@ -77,6 +97,7 @@ header {
   color: white;
 }
 
+/* ===== MODAL ===== */
 #modal {
   position: fixed;
   inset: 0;
