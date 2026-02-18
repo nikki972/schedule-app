@@ -1,30 +1,20 @@
 const $=id=>document.getElementById(id);
-
 const modal=$('modal'),addBtn=$('addBtn'),cancelBtn=$('cancelBtn'),saveBtn=$('saveBtn');
 const menuBtn=$('menuBtn'),sideMenu=$('sideMenu'),overlay=$('overlay'),closeMenu=$('closeMenu');
 const goToday=$('goToday'),goAll=$('goAll'),goAnalytics=$('goAnalytics'),goStudents=$('goStudents');
 const todayScreen=$('todayScreen'),allScreen=$('allScreen'),analyticsScreen=$('analyticsScreen'),studentsScreen=$('studentsScreen'),title=$('title');
 const analyticsDate=$('analyticsDate'),countDone=$('countDone'),countPaid=$('countPaid'),sumIncome=$('sumIncome'),sumDebt=$('sumDebt');
-
 const student=$('student'),subject=$('subject'),date=$('date'),time=$('startTime'),price=$('price');
 
 let lessons=JSON.parse(localStorage.getItem('lessons')||'[]');
-
-const students=[
-{id:1,name:'Иван',price:700},
-{id:2,name:'Мария',price:1000}
-];
+const students=[{id:1,name:'Иван',price:700},{id:2,name:'Мария',price:1000}];
 students.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;student.appendChild(o);});
 
 menuBtn.onclick=()=>{sideMenu.classList.add('open');overlay.classList.add('show');};
-overlay.onclick=closeSideMenu;
-closeMenu.onclick=closeSideMenu;
+overlay.onclick=closeSideMenu;closeMenu.onclick=closeSideMenu;
 function closeSideMenu(){sideMenu.classList.remove('open');overlay.classList.remove('show');}
 
-goToday.onclick=()=>showScreen('today');
-goAll.onclick=()=>showScreen('all');
-goAnalytics.onclick=()=>showScreen('analytics');
-goStudents.onclick=()=>showScreen('students');
+goToday.onclick=()=>showScreen('today');goAll.onclick=()=>showScreen('all');goAnalytics.onclick=()=>showScreen('analytics');goStudents.onclick=()=>showScreen('students');
 
 function showScreen(s){
   todayScreen.classList.add('hidden');allScreen.classList.add('hidden');analyticsScreen.classList.add('hidden');studentsScreen.classList.add('hidden');
@@ -35,19 +25,24 @@ function showScreen(s){
   closeSideMenu();
 }
 
-menuThemeToggle.onclick=()=>{document.body.classList.toggle('dark');document.body.classList.toggle('light');};
+function updateThemeIcon(){
+  const btn=$('menuThemeToggle');
+  if(document.body.classList.contains('dark')) btn.textContent='🌗'; else btn.textContent='☀️';
+  btn.classList.add('active'); setTimeout(()=>btn.classList.remove('active'),300);
+}
+$('menuThemeToggle').onclick=()=>{
+  document.body.classList.toggle('dark');document.body.classList.toggle('light');updateThemeIcon();
+}
+updateThemeIcon();
 
-addBtn.onclick=()=>modal.classList.add('active');
-cancelBtn.onclick=()=>modal.classList.remove('active');
+addBtn.onclick=()=>modal.classList.add('active');cancelBtn.onclick=()=>modal.classList.remove('active');
 student.onchange=check;date.oninput=check;time.oninput=check;
-
 function check(){saveBtn.disabled=!(student.value&&date.value&&time.value);}
+
 saveBtn.onclick=()=>{
   const s=students.find(x=>x.id==student.value);
   lessons.push({student:s.name,subject:subject.value,date:date.value,time:time.value,price:price.value||s.price,status:'planned',paid:false});
-  localStorage.setItem('lessons',JSON.stringify(lessons));
-  modal.classList.remove('active');
-  renderToday();renderAll();renderAnalytics();renderStudents();
+  saveAll();
 }
 
 function statusIcon(s){return s==='done'?'✅':s==='cancelled'?'❌':'🕒';}
@@ -61,23 +56,19 @@ function renderLesson(container,l){
   <span class="paid">${l.paid?'💰':'⏳'}</span>
   <span class="move">🔁</span>
   </div>`;
-  d.querySelector('.status').onclick=()=>{l.status=nextStatus(l.status);save();}
-  d.querySelector('.paid').onclick=()=>{l.paid=!l.paid;save();}
+  d.querySelector('.status').onclick=()=>{l.status=nextStatus(l.status);saveAll();}
+  d.querySelector('.paid').onclick=()=>{l.paid=!l.paid;saveAll();}
   d.querySelector('.move').onclick=()=>{
     const newDate=prompt("Новая дата YYYY-MM-DD",l.date);
     const newTime=prompt("Новое время HH:MM",l.time);
-    if(newDate && newTime){l.date=newDate;l.time=newTime;save();}
+    if(newDate && newTime){l.date=newDate;l.time=newTime;saveAll();}
   }
   container.appendChild(d);
 }
 
-function renderToday(){
-  todayScreen.innerHTML='';
-  const today=new Date().toISOString().slice(0,10);
-  const list=lessons.filter(l=>l.date===today);
-  if(!list.length){todayScreen.innerHTML='<p>Сегодня занятий нет</p>';return;}
-  list.forEach(renderLesson.bind(null,todayScreen));
-}
+function renderToday(){todayScreen.innerHTML='';const today=new Date().toISOString().slice(0,10);const list=lessons.filter(l=>l.date===today);
+if(!list.length){todayScreen.innerHTML='<p>Сегодня занятий нет</p>';return;}
+list.forEach(renderLesson.bind(null,todayScreen));}
 
 function renderAll(){allScreen.innerHTML='';lessons.forEach(renderLesson.bind(null,allScreen));}
 
@@ -110,12 +101,12 @@ function renderStudents(){
     <button class="changePrice">Сменить цену</button>`;
     d.querySelector('.changePrice').onclick=()=>{
       const np=parseInt(prompt("Новая цена",s.price));
-      if(np){s.price=np;save();}
+      if(np){s.price=np;saveAll();}
     };
     studentsScreen.appendChild(d);
   });
 }
 
-function save(){localStorage.setItem('lessons',JSON.stringify(lessons));renderToday();renderAll();renderAnalytics();renderStudents();}
+function saveAll(){localStorage.setItem('lessons',JSON.stringify(lessons));renderToday();renderAll();renderAnalytics();renderStudents();}
 
 showScreen('today');
