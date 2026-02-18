@@ -21,32 +21,21 @@ const timeInput = $('time');
 let lessons = [];
 let currentDate = new Date();
 
-/* ===== DATE ===== */
-const weekDays = [
-  'Воскресенье','Понедельник','Вторник',
-  'Среда','Четверг','Пятница','Суббота'
-];
-
-function formatDate(d) {
-  return d.toLocaleDateString('ru-RU', {
-    day:'2-digit', month:'2-digit', year:'2-digit'
-  });
-}
-
-function isToday(d) {
-  const t = new Date();
-  return d.toDateString() === t.toDateString();
-}
+/* ===== HEADER ===== */
+const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
 
 function updateHeader() {
-  title.textContent = weekDays[currentDate.getDay()];
-  todayDate.textContent = formatDate(currentDate);
-  todayMark.classList.toggle('hidden', !isToday(currentDate));
+  title.textContent = days[currentDate.getDay()];
+  todayDate.textContent = currentDate.toLocaleDateString('ru-RU');
+  todayMark.classList.toggle(
+    'hidden',
+    currentDate.toDateString() !== new Date().toDateString()
+  );
 }
 
 /* ===== DAY NAV ===== */
-function changeDay(delta) {
-  currentDate.setDate(currentDate.getDate() + delta);
+function changeDay(d) {
+  currentDate.setDate(currentDate.getDate() + d);
   updateHeader();
   renderToday();
 }
@@ -54,37 +43,47 @@ function changeDay(delta) {
 prevDayBtn.onclick = () => changeDay(-1);
 nextDayBtn.onclick = () => changeDay(1);
 
-/* ===== TODAY ===== */
+/* ===== SORT + RENDER ===== */
 function renderToday() {
   todayScreen.innerHTML = '';
   const day = currentDate.toISOString().slice(0,10);
-  const list = lessons.filter(l => l.date === day);
+
+  const list = lessons
+    .filter(l => l.date === day)
+    .sort((a, b) => a.time.localeCompare(b.time));
 
   if (!list.length) {
-    todayScreen.innerHTML = '<p style="padding:16px;opacity:.6">Нет занятий</p>';
+    todayScreen.innerHTML =
+      '<p style="padding:16px;opacity:.6">Нет занятий</p>';
     return;
   }
 
   list.forEach(l => {
-    const d = document.createElement('div');
-    d.className = 'lesson';
-    d.textContent = `${l.time} — ${l.subject} (${l.student})`;
-    todayScreen.appendChild(d);
+    const row = document.createElement('div');
+    row.className = 'lesson';
+
+    row.innerHTML = `
+      <div class="lesson-time">${l.time}</div>
+      <div class="lesson-info">
+        <div class="lesson-student">${l.student}</div>
+        <div class="lesson-subject">${l.subject}</div>
+      </div>
+    `;
+
+    todayScreen.appendChild(row);
   });
 }
 
-/* ===== FORM ===== */
+/* ===== MODAL ===== */
 function checkForm() {
   saveBtn.disabled = !(
     studentInput.value &&
-    subjectSelect.value &&
     dateInput.value &&
     timeInput.value
   );
 }
 
-[studentInput, subjectSelect, dateInput, timeInput]
-  .forEach(el => el.oninput = checkForm);
+[studentInput, dateInput, timeInput].forEach(i => i.oninput = checkForm);
 
 addBtn.onclick = () => {
   modal.classList.add('active');
