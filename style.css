@@ -1,12 +1,12 @@
 /* ===== Темы ===== */
 body.dark {
   background: #2b2b2b;
-  color: #fff;
+  color: #ffffff;
 }
 
 body.light {
   background: #f4f4f4;
-  color: #000;
+  color: #000000;
 }
 
 body {
@@ -46,7 +46,7 @@ header {
 }
 
 body.light .lesson {
-  background: #fff;
+  background: #ffffff;
 }
 
 /* ===== Empty ===== */
@@ -71,9 +71,12 @@ body.light .lesson {
 
 /* ===== MODAL ===== */
 #modal {
-  display: none; /* 🔥 КЛЮЧЕВО */
+  display: none;              /* ⬅️ ключевая строка */
   position: fixed;
-  inset: 0;
+  top: 0;                     /* ⬅️ вместо inset */
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0,0,0,0.6);
   align-items: center;
   justify-content: center;
@@ -91,19 +94,23 @@ body.light .lesson {
 }
 
 body.light .modal-content {
-  background: #fff;
+  background: #ffffff;
 }
 
+/* ===== Form ===== */
 label {
   display: block;
   margin-bottom: 10px;
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 6px;
+  box-sizing: border-box;
 }
 
+/* ===== Buttons ===== */
 .buttons {
   display: flex;
   justify-content: space-between;
