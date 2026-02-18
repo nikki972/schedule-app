@@ -11,27 +11,34 @@
 <div id="overlay"></div>
 
 <nav id="sideMenu">
-<h3>Меню</h3>
-<button id="goToday" class="menu-btn">📅 Сегодня</button>
-<button id="goAll" class="menu-btn">📋 Все занятия</button>
-<button id="goAnalytics" class="menu-btn">📊 Аналитика</button>
-<button id="goStudents" class="menu-btn">👨‍🎓 Ученики</button>
+  <h3>Меню</h3>
+  <button id="goToday" class="menu-btn">📅 Сегодня</button>
+  <button id="goAll" class="menu-btn">📋 Все занятия</button>
+  <button id="goAnalytics" class="menu-btn">📊 Аналитика</button>
+  <button id="goStudents" class="menu-btn">👨‍🎓 Ученики</button>
 
-<div class="menu-divider"></div>
-<button id="menuThemeToggle" class="menu-btn">🌙 Переключить тему</button>
+  <div class="menu-divider"></div>
 
-<div class="menu-divider"></div>
-<button id="closeMenu" class="menu-btn danger">Закрыть</button>
+  <button id="closeMenu" class="menu-btn danger">Закрыть</button>
+  <button id="menuThemeToggle" class="theme-btn">🌗</button>
 </nav>
 
 <header>
-<button id="menuBtn" class="burger">☰</button>
-<h1 id="title">Сегодня</h1>
+  <button id="menuBtn" class="burger">☰</button>
+  <h1 id="title">Сегодня</h1>
 </header>
 
 <main id="todayScreen"></main>
 <main id="allScreen" class="hidden"></main>
-<main id="analyticsScreen" class="hidden"></main>
+<main id="analyticsScreen" class="hidden">
+  <div class="analytics-card">
+    <label>Дата<input type="date" id="analyticsDate"></label>
+    <div>Проведено: <span id="countDone">0</span></div>
+    <div>Оплачено: <span id="countPaid">0</span></div>
+    <div>Доход: <span id="sumIncome">0 ₽</span></div>
+    <div class="debt">Долг: <span id="sumDebt">0 ₽</span></div>
+  </div>
+</main>
 <main id="studentsScreen" class="hidden"></main>
 
 <button id="addBtn">＋</button>
@@ -39,12 +46,17 @@
 <div id="modal">
 <div class="modal-content">
 <h2>Новое занятие</h2>
-
 <label>Ученик<select id="student"></select></label>
-<label>Предмет<select id="subject"><option>Математика</option><option>Алгебра</option><option>Геометрия</option><option>Физика</option></select></label>
+<label>Предмет<select id="subject">
+<option>Математика</option><option>Алгебра</option><option>Геометрия</option><option>Физика</option>
+</select></label>
 <label>Дата<input type="date" id="date"></label>
 <label>Начало<input type="time" id="startTime"></label>
-<label>Стоимость<select id="price"><option value="">По умолчанию</option><option value="700">700 ₽</option><option value="1000">1000 ₽</option></select></label>
+<label>Стоимость<select id="price">
+<option value="">По умолчанию</option>
+<option value="700">700 ₽</option>
+<option value="1000">1000 ₽</option>
+</select></label>
 
 <div class="buttons">
 <button id="saveBtn" disabled>Сохранить</button>
