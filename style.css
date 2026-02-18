@@ -172,9 +172,7 @@ header {
   opacity: .4;
 }
 
-.sheet-save:enabled {
-  opacity: 1;
-}
+.sheet-save:enabled { opacity: 1; }
 
 .sheet-body {
   padding: 16px;
@@ -187,7 +185,8 @@ header {
   margin-bottom: 14px;
 }
 
-.sheet-body input {
+.sheet-body input,
+.sheet-body select {
   width: 100%;
   margin-top: 6px;
   padding: 12px;
