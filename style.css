@@ -1,18 +1,130 @@
-/* --- Темы --- */
+/* ===== Темы ===== */
 body.dark {
-  --bg-color: #2b2b2b;
-  --text-color: #ffffff;
-  --card-bg: #3a3a3a;
-  --border-color: #444;
-  --button-bg: #4cafef;
+  --bg: #2b2b2b;
+  --card: #3a3a3a;
+  --text: #ffffff;
+  --border: #444;
+  --accent: #4cafef;
 }
 
 body.light {
-  --bg-color: #f4f4f4;
-  --text-color: #000000;
-  --card-bg: #ffffff;
-  --border-color: #ccc;
-  --button-bg: #2196f3;
+  --bg: #f4f4f4;
+  --card: #ffffff;
+  --text: #000000;
+  --border: #ccc;
+  --accent: #2196f3;
 }
 
-/* --- Общие сти
+/* ===== База ===== */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s;
+}
+
+header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+#todayDate {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+main {
+  padding: 16px;
+}
+
+.empty {
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* ===== Карточки ===== */
+.lesson {
+  background: var(--card);
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-left: 6px solid #fff;
+}
+
+/* Предметы */
+.lesson[data-subject="Математика"] { border-color: #2196f3; }
+.lesson[data-subject="Алгебра"] { border-color: #9c27b0; }
+.lesson[data-subject="Геометрия"] { border-color: #ff9800; }
+.lesson[data-subject="Физика"] { border-color: #4caf50; }
+
+.status {
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+}
+
+/* ===== Плюс ===== */
+#addBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  font-size: 32px;
+  background: var(--accent);
+}
+
+/* ===== Модалка ===== */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden { display: none; }
+
+.modal-content {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ===== Аналитика ===== */
+.analytics {
+  margin: 16px;
+  background: var(--card);
+  padding: 12px;
+  border-radius: 12px;
+}
