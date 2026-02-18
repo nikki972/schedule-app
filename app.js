@@ -50,8 +50,8 @@ function render() {
     const div = document.createElement("div");
     div.className = "lesson";
     div.innerHTML = `
-      <div class="color" style="background:#5B8DEF"></div>
-      <div class="info">
+      <div class="color"></div>
+      <div>
         <div class="time">${lesson.start} – ${lesson.end}</div>
         <div class="title">${lesson.title}</div>
       </div>
@@ -61,7 +61,6 @@ function render() {
 }
 
 addBtn.addEventListener("click", () => {
-  modal.style.display = "flex";
   modal.classList.remove("hidden");
 });
 
