@@ -18,6 +18,9 @@ const studentsScreen = $('studentsScreen');
 const title = $('title');
 const todayDate = $('todayDate');
 
+const prevDayBtn = $('prevDay');
+const nextDayBtn = $('nextDay');
+
 const addBtn = $('addBtn');
 const modal = $('modal');
 const saveBtn = $('saveBtn');
@@ -26,12 +29,11 @@ const cancelBtn = $('cancelBtn');
 let lessons = [];
 let currentDate = new Date();
 
-/* ===== МЕНЮ ===== */
+/* ===== MENU ===== */
 menuBtn.onclick = () => {
   sideMenu.classList.add('open');
   overlay.classList.add('show');
 };
-
 overlay.onclick = close;
 closeMenu.onclick = close;
 
@@ -40,7 +42,7 @@ function close() {
   overlay.classList.remove('show');
 }
 
-/* ===== ДАТА ===== */
+/* ===== DATE ===== */
 function formatDate(d) {
   return d.toLocaleDateString('ru-RU', {
     day: '2-digit',
@@ -49,7 +51,21 @@ function formatDate(d) {
   });
 }
 
-/* ===== ЭКРАНЫ ===== */
+function updateHeader() {
+  todayDate.textContent = formatDate(currentDate);
+}
+
+/* ===== DAY CHANGE ===== */
+function changeDay(delta) {
+  currentDate.setDate(currentDate.getDate() + delta);
+  updateHeader();
+  renderToday();
+}
+
+prevDayBtn.onclick = () => changeDay(-1);
+nextDayBtn.onclick = () => changeDay(1);
+
+/* ===== SCREENS ===== */
 goToday.onclick = () => show('today');
 goAll.onclick = () => show('all');
 goAnalytics.onclick = () => show('analytics');
@@ -64,7 +80,7 @@ function show(screen) {
   if (screen === 'today') {
     todayScreen.classList.remove('hidden');
     title.textContent = 'Сегодня';
-    updateHeaderDate();
+    updateHeader();
     renderToday();
   }
 
@@ -77,15 +93,9 @@ function show(screen) {
   close();
 }
 
-/* ===== ОБНОВЛЕНИЕ ЗАГОЛОВКА ===== */
-function updateHeaderDate() {
-  todayDate.textContent = formatDate(currentDate);
-}
-
-/* ===== СЕГОДНЯ ===== */
+/* ===== TODAY ===== */
 function renderToday() {
   todayScreen.innerHTML = '';
-
   const day = currentDate.toISOString().slice(0,10);
   const list = lessons.filter(l => l.date === day);
 
@@ -102,29 +112,24 @@ function renderToday() {
   });
 }
 
-/* ===== СВАЙПЫ ===== */
-let touchStartX = null;
+/* ===== SWIPES ===== */
+let startX = null;
 
 todayScreen.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
+  startX = e.touches[0].clientX;
 }, { passive: true });
 
 todayScreen.addEventListener('touchend', e => {
-  if (touchStartX === null) return;
-
-  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (startX === null) return;
+  const dx = e.changedTouches[0].clientX - startX;
 
   if (Math.abs(dx) > 60) {
-    if (dx < 0) currentDate.setDate(currentDate.getDate() + 1); // влево
-    if (dx > 0) currentDate.setDate(currentDate.getDate() - 1); // вправо
-    updateHeaderDate();
-    renderToday();
+    changeDay(dx < 0 ? 1 : -1);
   }
-
-  touchStartX = null;
+  startX = null;
 }, { passive: true });
 
-/* ===== ДОБАВЛЕНИЕ ===== */
+/* ===== ADD ===== */
 addBtn.onclick = () => modal.classList.add('active');
 cancelBtn.onclick = () => modal.classList.remove('active');
 
