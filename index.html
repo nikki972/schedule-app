@@ -1,81 +1,71 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Расписание</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="dark">
 
-  <header>
-    <h1>Сегодня</h1>
-    <div id="todayDate"></div>
-    <button id="themeToggle">🌙</button>
-  </header>
+<header>
+  <h1>Сегодня</h1>
+  <div id="todayDate"></div>
+  <button id="themeToggle">🌙</button>
+</header>
 
-  <main id="schedule">
-    <p class="empty">Сегодня занятий нет</p>
-  </main>
+<main id="schedule">
+  <p class="empty">Сегодня занятий нет</p>
+</main>
 
-  <button id="addBtn">＋</button>
+<button id="addBtn">＋</button>
 
-  <!-- Модальное окно -->
-  <div id="modal" class="hidden">
-    <div class="modal-content">
-      <h2>Новое занятие</h2>
+<!-- МОДАЛКА -->
+<div id="modal">
+  <div class="modal-content">
+    <h2>Новое занятие</h2>
 
-      <label>
-        Ученик
-        <select id="student"></select>
-      </label>
+    <label>
+      Ученик
+      <select id="student"></select>
+    </label>
 
-      <label>
-        Предмет
-        <select id="subject">
-          <option value="Математика">Математика</option>
-          <option value="Алгебра">Алгебра</option>
-          <option value="Геометрия">Геометрия</option>
-          <option value="Физика">Физика</option>
-        </select>
-      </label>
+    <label>
+      Предмет
+      <select id="subject">
+        <option>Математика</option>
+        <option>Алгебра</option>
+        <option>Геометрия</option>
+        <option>Физика</option>
+      </select>
+    </label>
 
-      <label>
-        Дата
-        <input type="date" id="date" />
-      </label>
-
-      <label>
-        Начало
-        <input type="time" id="startTime" />
-      </label>
-
-      <label>
-        Стоимость
-        <select id="price">
-          <option value="">По умолчанию</option>
-          <option value="700">700 ₽</option>
-          <option value="1000">1000 ₽</option>
-        </select>
-      </label>
-
-      <div class="buttons">
-        <button id="saveBtn" disabled>Сохранить</button>
-        <button id="cancelBtn">Отмена</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Аналитика дохода -->
-  <div id="analytics" class="analytics">
-    <h2>Доход</h2>
     <label>
       Дата
-      <input type="date" id="analyticsDate" value="">
+      <input type="date" id="date">
     </label>
-    <div id="analyticsResult">Выберите дату для подсчёта дохода</div>
-  </div>
 
-  <script src="script.js"></script>
+    <label>
+      Начало
+      <input type="time" id="startTime">
+    </label>
+
+    <label>
+      Стоимость
+      <select id="price">
+        <option value="">По умолчанию</option>
+        <option value="700">700 ₽</option>
+        <option value="1000">1000 ₽</option>
+      </select>
+    </label>
+
+    <div class="buttons">
+      <button id="saveBtn" disabled>Сохранить</button>
+      <button id="cancelBtn">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
