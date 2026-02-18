@@ -24,6 +24,7 @@ const saveBtn = $('saveBtn');
 const cancelBtn = $('cancelBtn');
 
 let lessons = [];
+let currentDate = new Date();
 
 /* ===== МЕНЮ ===== */
 menuBtn.onclick = () => {
@@ -63,7 +64,7 @@ function show(screen) {
   if (screen === 'today') {
     todayScreen.classList.remove('hidden');
     title.textContent = 'Сегодня';
-    todayDate.textContent = formatDate(new Date());
+    updateHeaderDate();
     renderToday();
   }
 
@@ -76,21 +77,52 @@ function show(screen) {
   close();
 }
 
+/* ===== ОБНОВЛЕНИЕ ЗАГОЛОВКА ===== */
+function updateHeaderDate() {
+  todayDate.textContent = formatDate(currentDate);
+}
+
 /* ===== СЕГОДНЯ ===== */
 function renderToday() {
   todayScreen.innerHTML = '';
-  if (!lessons.length) {
+
+  const day = currentDate.toISOString().slice(0,10);
+  const list = lessons.filter(l => l.date === day);
+
+  if (!list.length) {
     todayScreen.innerHTML = '<p style="padding:16px">Нет занятий</p>';
     return;
   }
 
-  lessons.forEach(l => {
+  list.forEach(l => {
     const d = document.createElement('div');
     d.className = 'lesson';
     d.textContent = `${l.time} — ${l.subject}`;
     todayScreen.appendChild(d);
   });
 }
+
+/* ===== СВАЙПЫ ===== */
+let touchStartX = null;
+
+todayScreen.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+
+todayScreen.addEventListener('touchend', e => {
+  if (touchStartX === null) return;
+
+  const dx = e.changedTouches[0].clientX - touchStartX;
+
+  if (Math.abs(dx) > 60) {
+    if (dx < 0) currentDate.setDate(currentDate.getDate() + 1); // влево
+    if (dx > 0) currentDate.setDate(currentDate.getDate() - 1); // вправо
+    updateHeaderDate();
+    renderToday();
+  }
+
+  touchStartX = null;
+}, { passive: true });
 
 /* ===== ДОБАВЛЕНИЕ ===== */
 addBtn.onclick = () => modal.classList.add('active');
