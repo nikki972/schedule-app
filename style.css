@@ -7,7 +7,7 @@ body {
 
 .hidden { display: none; }
 
-/* ===== HEADER ===== */
+/* HEADER */
 header {
   display: flex;
   align-items: center;
@@ -38,7 +38,7 @@ header {
   opacity: 0.5;
 }
 
-/* ===== MENU ===== */
+/* MENU */
 #sideMenu {
   position: fixed;
   top: 0;
@@ -75,7 +75,7 @@ header {
 
 #overlay.show { display: block; }
 
-/* ===== LESSON ===== */
+/* LESSON */
 .lesson {
   padding: 12px;
   margin: 10px;
@@ -83,7 +83,7 @@ header {
   border-radius: 8px;
 }
 
-/* ===== FAB ===== */
+/* FAB */
 #addBtn {
   position: fixed;
   right: 24px;
@@ -97,7 +97,7 @@ header {
   color: white;
 }
 
-/* ===== MODAL ===== */
+/* MODAL */
 #modal {
   position: fixed;
   inset: 0;
