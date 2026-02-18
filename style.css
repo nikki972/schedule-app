@@ -6,12 +6,21 @@ body.light{background:#fdf5e6;color:#000;}
 header{padding:16px;display:flex;align-items:center;gap:12px;}
 .burger{font-size:22px;background:none;border:none;color:inherit;}
 
+/* Экран Сегодня */
+#todayScreen{padding:16px;}
+.dayLabel{font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:12px;}
+.dayLabel span{opacity:0.6;font-size:14px;}
+.navArrows button{background:none;border:none;color:inherit;font-size:20px;cursor:pointer;}
+
+/* Занятия */
 .lesson{padding:12px;border-radius:8px;margin-bottom:10px;background:#3a3a3a;display:flex;justify-content:space-between;align-items:center;transition: background 0.3s,color 0.3s;}
 body.light .lesson{background:#fff;}
-.status,.paid,.move{cursor:pointer;margin-left:5px;}
+.status,.paid,.move,.delete{cursor:pointer;margin-left:5px;}
 
+/* Плавающая кнопка */
 #addBtn{position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:50%;font-size:32px;border:none;background:#4cafef;color:white;}
 
+/* Модальное окно */
 #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;}
 #modal.active{display:flex;}
 .modal-content{background:#3a3a3a;padding:16px;border-radius:12px;width:90%;transition: background 0.3s,color 0.3s;}
@@ -20,6 +29,7 @@ label{display:block;margin-bottom:10px;}
 input,select{width:100%;padding:6px;}
 .buttons{display:flex;justify-content:space-between;}
 
+/* Меню */
 #sideMenu{position:fixed;top:0;left:0;bottom:0;width:260px;background:#3a3a3a;padding:16px;transform:translateX(-100%);transition:.25s;z-index:1000;display:flex;flex-direction:column;justify-content:space-between;transition: background 0.3s,color 0.3s;}
 body.light #sideMenu{background:#fdf5e6;}
 #sideMenu.open{transform:translateX(0);}
@@ -32,6 +42,7 @@ body.light #sideMenu{background:#fdf5e6;}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:999;}
 #overlay.show{display:block;}
 
+/* Аналитика и студенты */
 .analytics-card,.students-card{padding:16px;margin:16px;}
 .analytics-row,.student-row{margin-top:10px;font-size:16px;}
 .debt{color:#ff7777;}
