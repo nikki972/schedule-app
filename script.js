@@ -13,6 +13,8 @@ const priceSelect = document.getElementById('price');
 const schedule = document.getElementById('schedule');
 const todayDate = document.getElementById('todayDate');
 
+const themeToggle = document.getElementById('themeToggle');
+
 // --- Сегодняшняя дата ---
 const today = new Date();
 todayDate.textContent = today.toLocaleDateString('ru-RU', {
@@ -70,8 +72,8 @@ saveBtn.onclick = () => {
     date: dateInput.value,
     start: startTime.value,
     price: priceSelect.value || selectedStudent.price,
-    status: 'planned', // запланировано
-    paid: false        // не оплачено
+    status: 'planned',
+    paid: false
   };
 
   lessons.push(lesson);
@@ -148,7 +150,7 @@ function render() {
   });
 }
 
-// --- Первая отрисовка ---
+// --- Первичная отрисовка ---
 render();
 
 // --- Аналитика дохода ---
@@ -170,6 +172,16 @@ function renderAnalytics() {
 }
 
 analyticsDateInput.oninput = renderAnalytics;
-
-// --- Первичный рендер аналитики ---
 renderAnalytics();
+
+// --- Переключение темы ---
+const currentTheme = localStorage.getItem('theme') || 'dark';
+document.body.className = currentTheme;
+themeToggle.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+
+themeToggle.onclick = () => {
+  const newTheme = document.body.className === 'dark' ? 'light' : 'dark';
+  document.body.className = newTheme;
+  localStorage.setItem('theme', newTheme);
+  themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+};
