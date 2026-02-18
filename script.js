@@ -1,17 +1,6 @@
 const $ = id => document.getElementById(id);
 
-const menuBtn = $('menuBtn');
-const sideMenu = $('sideMenu');
-const overlay = $('overlay');
-const closeMenu = $('closeMenu');
-
-const goToday = $('goToday');
-
 const todayScreen = $('todayScreen');
-const allScreen = $('allScreen');
-const analyticsScreen = $('analyticsScreen');
-const studentsScreen = $('studentsScreen');
-
 const title = $('title');
 const todayDate = $('todayDate');
 const todayMark = $('todayMark');
@@ -24,117 +13,81 @@ const modal = $('modal');
 const saveBtn = $('saveBtn');
 const cancelBtn = $('cancelBtn');
 
+const studentInput = $('student');
+const subjectInput = $('subject');
+const dateInput = $('date');
+const timeInput = $('time');
+
 let lessons = [];
 let currentDate = new Date();
 
-/* ===== MENU ===== */
-menuBtn.onclick = () => {
-  sideMenu.classList.add('open');
-  overlay.classList.add('show');
-};
-overlay.onclick = close;
-closeMenu.onclick = close;
-
-function close() {
-  sideMenu.classList.remove('open');
-  overlay.classList.remove('show');
-}
-
-/* ===== DATE HELPERS ===== */
-const weekDays = [
-  'Воскресенье',
-  'Понедельник',
-  'Вторник',
-  'Среда',
-  'Четверг',
-  'Пятница',
-  'Суббота'
-];
+/* ===== DATE ===== */
+const weekDays = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
 
 function formatDate(d) {
-  return d.toLocaleDateString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: '2-digit'
-  });
+  return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit'});
 }
 
-function isToday(d) {
-  const t = new Date();
-  return d.toDateString() === t.toDateString();
+function isToday(d){
+  const t=new Date();
+  return d.toDateString()===t.toDateString();
 }
 
-function updateHeader() {
+function updateHeader(){
   title.textContent = weekDays[currentDate.getDay()];
   todayDate.textContent = formatDate(currentDate);
-
-  if (isToday(currentDate)) {
-    todayMark.classList.remove('hidden');
-  } else {
-    todayMark.classList.add('hidden');
-  }
+  todayMark.classList.toggle('hidden', !isToday(currentDate));
 }
 
-/* ===== DAY CHANGE ===== */
-function changeDay(delta) {
-  currentDate.setDate(currentDate.getDate() + delta);
+/* ===== DAY NAV ===== */
+function changeDay(d){
+  currentDate.setDate(currentDate.getDate()+d);
   updateHeader();
   renderToday();
 }
 
-prevDayBtn.onclick = () => changeDay(-1);
-nextDayBtn.onclick = () => changeDay(1);
-
-/* ===== SCREEN ===== */
-goToday.onclick = () => {
-  todayScreen.classList.remove('hidden');
-  updateHeader();
-  renderToday();
-  close();
-};
+prevDayBtn.onclick = ()=>changeDay(-1);
+nextDayBtn.onclick = ()=>changeDay(1);
 
 /* ===== TODAY ===== */
-function renderToday() {
-  todayScreen.innerHTML = '';
-  const day = currentDate.toISOString().slice(0,10);
-  const list = lessons.filter(l => l.date === day);
+function renderToday(){
+  todayScreen.innerHTML='';
+  const day=currentDate.toISOString().slice(0,10);
+  const list=lessons.filter(l=>l.date===day);
 
-  if (!list.length) {
-    todayScreen.innerHTML = '<p style="padding:16px">Нет занятий</p>';
+  if(!list.length){
+    todayScreen.innerHTML='<p style="padding:16px;opacity:.6">Нет занятий</p>';
     return;
   }
 
-  list.forEach(l => {
-    const d = document.createElement('div');
-    d.className = 'lesson';
-    d.textContent = `${l.time} — ${l.subject}`;
+  list.forEach(l=>{
+    const d=document.createElement('div');
+    d.className='lesson';
+    d.textContent=`${l.time} — ${l.subject} (${l.student})`;
     todayScreen.appendChild(d);
   });
 }
 
-/* ===== SWIPES ===== */
-let startX = null;
+/* ===== SHEET ===== */
+function checkForm(){
+  saveBtn.disabled = !(studentInput.value && subjectInput.value && dateInput.value && timeInput.value);
+}
 
-todayScreen.addEventListener('touchstart', e => {
-  startX = e.touches[0].clientX;
-}, { passive: true });
+[studentInput,subjectInput,dateInput,timeInput].forEach(i=>i.oninput=checkForm);
 
-todayScreen.addEventListener('touchend', e => {
-  if (startX === null) return;
-  const dx = e.changedTouches[0].clientX - startX;
-  if (Math.abs(dx) > 60) changeDay(dx < 0 ? 1 : -1);
-  startX = null;
-}, { passive: true });
+addBtn.onclick = ()=>{
+  modal.classList.add('active');
+  dateInput.value = currentDate.toISOString().slice(0,10);
+};
 
-/* ===== ADD ===== */
-addBtn.onclick = () => modal.classList.add('active');
-cancelBtn.onclick = () => modal.classList.remove('active');
+cancelBtn.onclick = ()=>modal.classList.remove('active');
 
-saveBtn.onclick = () => {
+saveBtn.onclick = ()=>{
   lessons.push({
-    subject: $('subject').value,
-    date: $('date').value,
-    time: $('time').value
+    student: studentInput.value,
+    subject: subjectInput.value,
+    date: dateInput.value,
+    time: timeInput.value
   });
   modal.classList.remove('active');
   renderToday();
