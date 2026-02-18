@@ -23,13 +23,21 @@ todayDate.textContent = today.toLocaleDateString('ru-RU', {
   month: 'long'
 });
 
-// --- Список учеников с базовой ценой ---
+// --- Список учеников ---
 let students = [
   { id: 1, name: "Иван", price: 700 },
   { id: 2, name: "Мария", price: 1000 },
   { id: 3, name: "Пётр", price: 700 },
   { id: 4, name: "Светлана", price: 1000 }
 ];
+
+// --- Предметы и их цвета ---
+const subjectColors = {
+  "Математика": "#2196f3",
+  "Алгебра": "#9c27b0",
+  "Геометрия": "#ff9800",
+  "Физика": "#4caf50"
+};
 
 // --- Заполняем select учеников ---
 function renderStudents() {
@@ -75,7 +83,6 @@ saveBtn.onclick = () => {
     status: 'planned',
     paid: false
   };
-
   lessons.push(lesson);
   localStorage.setItem('lessons', JSON.stringify(lessons));
   modal.classList.add('hidden');
@@ -83,7 +90,7 @@ saveBtn.onclick = () => {
   renderAnalytics();
 };
 
-// --- Изменение статуса занятия ---
+// --- Изменение статуса ---
 function setStatus(index, newStatus) {
   lessons[index].status = newStatus;
   localStorage.setItem('lessons', JSON.stringify(lessons));
@@ -99,10 +106,9 @@ function togglePaid(index) {
   renderAnalytics();
 }
 
-// --- Отрисовка занятий на экран ---
+// --- Отрисовка занятий ---
 function render() {
   schedule.innerHTML = '';
-
   const todayStr = today.toISOString().slice(0,10);
   const todayLessons = lessons
     .map((l,i) => ({...l, index: i}))
@@ -116,13 +122,13 @@ function render() {
   todayLessons.forEach(l => {
     const div = document.createElement('div');
     div.className = 'lesson';
+    div.style.borderLeft = `6px solid ${subjectColors[l.subject] || '#fff'}`;
 
     const left = document.createElement('div');
     left.textContent = `${l.start} — ${l.subject} (${l.studentName})`;
 
     const right = document.createElement('div');
 
-    // --- Статус ---
     const statusBtn = document.createElement('span');
     statusBtn.className = 'status';
     statusBtn.textContent = l.status === 'planned' ? '🕒' :
@@ -136,7 +142,6 @@ function render() {
     };
     right.appendChild(statusBtn);
 
-    // --- Оплата ---
     const paidBtn = document.createElement('span');
     paidBtn.textContent = l.paid ? '💰' : '⏳';
     paidBtn.style.marginLeft = '8px';
@@ -156,32 +161,29 @@ render();
 // --- Аналитика дохода ---
 const analyticsDateInput = document.getElementById('analyticsDate');
 const analyticsResult = document.getElementById('analyticsResult');
-
-// Устанавливаем сегодняшнюю дату по умолчанию
 analyticsDateInput.value = today.toISOString().slice(0,10);
 
 function renderAnalytics() {
   const date = analyticsDateInput.value;
   const lessonsForDate = lessons.filter(l => l.date === date && l.status === 'done');
-
   const total = lessonsForDate.reduce((sum, l) => sum + Number(l.price || 0), 0);
   const paidCount = lessonsForDate.filter(l => l.paid).length;
   const totalCount = lessonsForDate.length;
-
   analyticsResult.textContent = `Занятий проведено: ${totalCount} (оплачено: ${paidCount}) | Доход: ${total} ₽`;
 }
-
 analyticsDateInput.oninput = renderAnalytics;
 renderAnalytics();
 
 // --- Переключение темы ---
-const currentTheme = localStorage.getItem('theme') || 'dark';
-document.body.className = currentTheme;
-themeToggle.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+let savedTheme = localStorage.getItem('theme') || 'dark';
+document.body.classList.remove('light','dark');
+document.body.classList.add(savedTheme);
+themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
 themeToggle.onclick = () => {
-  const newTheme = document.body.className === 'dark' ? 'light' : 'dark';
-  document.body.className = newTheme;
+  document.body.classList.toggle('dark');
+  document.body.classList.toggle('light');
+  const newTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
   localStorage.setItem('theme', newTheme);
   themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
 };
