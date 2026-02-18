@@ -60,7 +60,6 @@ function render() {
   });
 }
 
-// --- обработчики ---
 addBtn.addEventListener("click", () => {
   modal.style.display = "flex";
   modal.classList.remove("hidden");
