@@ -1,53 +1,65 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Расписание</title>
-
-  <link rel="stylesheet" href="style.css?v=5">
-  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+
   <header>
     <h1>Сегодня</h1>
     <div id="todayDate"></div>
   </header>
 
-  <main id="schedule"></main>
+  <main id="schedule">
+    <p class="empty">Сегодня занятий нет</p>
+  </main>
 
   <button id="addBtn">＋</button>
 
-  <!-- МОДАЛЬНОЕ ОКНО -->
+  <!-- Модальное окно -->
   <div id="modal" class="hidden">
     <div class="modal-content">
       <h2>Новое занятие</h2>
 
-      <label>Название</label>
-      <input id="titleInput" type="text">
+      <label>
+        Предмет
+        <select id="subject">
+          <option value="Математика">Математика</option>
+          <option value="Алгебра">Алгебра</option>
+          <option value="Геометрия">Геометрия</option>
+          <option value="Физика">Физика</option>
+        </select>
+      </label>
 
-      <label>День недели</label>
-      <select id="dayInput">
-        <option value="monday">Понедельник</option>
-        <option value="tuesday">Вторник</option>
-        <option value="wednesday">Среда</option>
-        <option value="thursday">Четверг</option>
-        <option value="friday">Пятница</option>
-        <option value="saturday">Суббота</option>
-        <option value="sunday">Воскресенье</option>
-      </select>
+      <label>
+        Дата
+        <input type="date" id="date" />
+      </label>
 
-      <label>Начало</label>
-      <input id="startInput" type="time">
+      <label>
+        Начало
+        <input type="time" id="startTime" />
+      </label>
 
-      <label>Конец</label>
-      <input id="endInput" type="time">
+      <label>
+        Стоимость
+        <select id="price">
+          <option value="">По умолчанию</option>
+          <option value="700">700 ₽</option>
+          <option value="1000">1000 ₽</option>
+        </select>
+      </label>
 
-      <button id="saveBtn">Сохранить</button>
+      <div class="buttons">
+        <button id="saveBtn" disabled>Сохранить</button>
+        <button id="cancelBtn">Отмена</button>
+      </div>
     </div>
   </div>
 
-  <script src="app.js?v=5"></script>
+  <script src="script.js"></script>
 </body>
 </html>
