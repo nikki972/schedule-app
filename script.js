@@ -8,6 +8,11 @@ const todayMark = $('todayMark');
 const prevDayBtn = $('prevDay');
 const nextDayBtn = $('nextDay');
 
+const menuBtn = $('menuBtn');
+const sideMenu = $('sideMenu');
+const overlay = $('overlay');
+const closeMenu = $('closeMenu');
+
 const addBtn = $('addBtn');
 const modal = $('modal');
 const saveBtn = $('saveBtn');
@@ -20,6 +25,20 @@ const timeInput = $('time');
 
 let lessons = [];
 let currentDate = new Date();
+
+/* ===== MENU ===== */
+menuBtn.onclick = () => {
+  sideMenu.classList.add('open');
+  overlay.classList.add('show');
+};
+
+overlay.onclick = closeSideMenu;
+closeMenu.onclick = closeSideMenu;
+
+function closeSideMenu() {
+  sideMenu.classList.remove('open');
+  overlay.classList.remove('show');
+}
 
 /* ===== HEADER ===== */
 const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
@@ -43,7 +62,7 @@ function changeDay(d) {
 prevDayBtn.onclick = () => changeDay(-1);
 nextDayBtn.onclick = () => changeDay(1);
 
-/* ===== SORT + RENDER ===== */
+/* ===== TODAY ===== */
 function renderToday() {
   todayScreen.innerHTML = '';
   const day = currentDate.toISOString().slice(0,10);
@@ -74,7 +93,7 @@ function renderToday() {
   });
 }
 
-/* ===== MODAL ===== */
+/* ===== SHEET ===== */
 function checkForm() {
   saveBtn.disabled = !(
     studentInput.value &&
