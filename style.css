@@ -1,4 +1,3 @@
-/* === базовое === */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -8,8 +7,10 @@ body {
 
 .hidden { display: none; }
 
-/* === header === */
+/* ===== HEADER ===== */
 header {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   padding: 12px 16px;
@@ -22,6 +23,7 @@ header {
   color: inherit;
 }
 
+/* ===== DAY NAV ===== */
 .day-nav {
   flex: 1;
   display: flex;
@@ -30,9 +32,24 @@ header {
   gap: 14px;
 }
 
-#title { font-size: 22px; font-weight: 600; }
-.today-mark { font-size: 12px; color: #4cafef; }
-.date-label { font-size: 13px; opacity: .45; }
+.title-block {
+  text-align: center;
+}
+
+#title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.today-mark {
+  font-size: 12px;
+  color: #4cafef;
+}
+
+.date-label {
+  font-size: 13px;
+  opacity: .45;
+}
 
 .day-btn {
   width: 34px;
@@ -41,9 +58,59 @@ header {
   border: none;
   background: rgba(255,255,255,.08);
   color: inherit;
+  font-size: 20px;
 }
 
-/* === LESSON iOS STYLE === */
+/* ===== MENU ===== */
+#sideMenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: #3a3a3a;
+  padding: 16px;
+  transform: translateX(-100%);
+  transition: .25s;
+  z-index: 1000;
+}
+
+#sideMenu.open {
+  transform: translateX(0);
+}
+
+.menu-btn {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+}
+
+.menu-divider {
+  height: 1px;
+  background: rgba(255,255,255,.2);
+  margin: 12px 0;
+}
+
+.menu-btn.danger {
+  color: #ff6666;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: none;
+  z-index: 999;
+}
+
+#overlay.show {
+  display: block;
+}
+
+/* ===== LESSON ROW (оставляем как есть) ===== */
 .lesson {
   display: flex;
   align-items: center;
@@ -54,9 +121,9 @@ header {
 }
 
 .lesson-time {
+  width: 60px;
   font-size: 18px;
   font-weight: 600;
-  width: 60px;
 }
 
 .lesson-info {
@@ -73,7 +140,7 @@ header {
   margin-top: 2px;
 }
 
-/* === FAB === */
+/* ===== FAB ===== */
 #addBtn {
   position: fixed;
   right: 24px;
@@ -87,15 +154,18 @@ header {
   color: #fff;
 }
 
-/* === modal sheet === */
+/* ===== iOS SHEET ===== */
 #modal {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.35);
   display: none;
+  z-index: 2000;
 }
 
-#modal.active { display: block; }
+#modal.active {
+  display: block;
+}
 
 .sheet {
   position: absolute;
@@ -103,13 +173,37 @@ header {
   width: 100%;
   background: #1c1c1e;
   border-radius: 16px 16px 0 0;
+  animation: slideUp .25s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .sheet-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.sheet-cancel {
+  background: none;
+  border: none;
+  color: #8e8e93;
+}
+
+.sheet-save {
+  background: none;
+  border: none;
+  color: #4cafef;
+  opacity: .4;
+}
+
+.sheet-save:enabled {
+  opacity: 1;
 }
 
 .sheet-body {
@@ -119,8 +213,8 @@ header {
 .sheet-body input,
 .sheet-body select {
   width: 100%;
-  padding: 12px;
   margin-top: 6px;
+  padding: 12px;
   border-radius: 10px;
   border: none;
   background: #2c2c2e;
