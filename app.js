@@ -1,94 +1,76 @@
-const scheduleEl = document.getElementById("schedule");
-const todayDateEl = document.getElementById("todayDate");
-const addBtn = document.getElementById("addBtn");
-const modal = document.getElementById("modal");
-const saveBtn = document.getElementById("saveBtn");
+const addBtn = document.getElementById('addBtn');
+const modal = document.getElementById('modal');
+const cancelBtn = document.getElementById('cancelBtn');
+const saveBtn = document.getElementById('saveBtn');
 
-const titleInput = document.getElementById("titleInput");
-const dayInput = document.getElementById("dayInput");
-const startInput = document.getElementById("startInput");
-const endInput = document.getElementById("endInput");
+const subject = document.getElementById('subject');
+const dateInput = document.getElementById('date');
+const startTime = document.getElementById('startTime');
+const priceSelect = document.getElementById('price');
 
-const weekdaysRu = [
-  "воскресенье",
-  "понедельник",
-  "вторник",
-  "среда",
-  "четверг",
-  "пятница",
-  "суббота"
-];
+const schedule = document.getElementById('schedule');
+const todayDate = document.getElementById('todayDate');
 
-const weekdaysKey = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday"
-];
+const today = new Date();
+todayDate.textContent = today.toLocaleDateString('ru-RU', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long'
+});
 
-let baseSchedule = JSON.parse(localStorage.getItem("baseSchedule")) || {};
+let lessons = JSON.parse(localStorage.getItem('lessons') || '[]');
 
-function render() {
-  const now = new Date();
-  todayDateEl.textContent =
-    weekdaysRu[now.getDay()] + ", " + now.toLocaleDateString("ru-RU");
-
-  const dayKey = weekdaysKey[now.getDay()];
-  const lessons = baseSchedule[dayKey] || [];
-
-  scheduleEl.innerHTML = "";
-
-  if (lessons.length === 0) {
-    scheduleEl.innerHTML = "<p>Сегодня занятий нет 🎉</p>";
-    return;
+function checkForm() {
+  if (dateInput.value && startTime.value) {
+    saveBtn.disabled = false;
+  } else {
+    saveBtn.disabled = true;
   }
-
-  lessons.forEach(lesson => {
-    const div = document.createElement("div");
-    div.className = "lesson";
-    div.innerHTML = `
-      <div class="color"></div>
-      <div>
-        <div class="time">${lesson.start} – ${lesson.end}</div>
-        <div class="title">${lesson.title}</div>
-      </div>
-    `;
-    scheduleEl.appendChild(div);
-  });
 }
 
-addBtn.addEventListener("click", () => {
-  modal.classList.remove("hidden");
-});
+addBtn.onclick = () => {
+  modal.classList.remove('hidden');
+};
 
-saveBtn.addEventListener("click", () => {
-  if (!titleInput.value || !startInput.value || !endInput.value) {
-    alert("Заполни все поля");
+cancelBtn.onclick = () => {
+  modal.classList.add('hidden');
+};
+
+dateInput.oninput = checkForm;
+startTime.oninput = checkForm;
+
+saveBtn.onclick = () => {
+  const lesson = {
+    subject: subject.value,
+    date: dateInput.value,
+    start: startTime.value,
+    duration: 60,
+    price: priceSelect.value || null,
+    status: 'planned'
+  };
+
+  lessons.push(lesson);
+  localStorage.setItem('lessons', JSON.stringify(lessons));
+  modal.classList.add('hidden');
+  render();
+};
+
+function render() {
+  schedule.innerHTML = '';
+
+  const todayStr = today.toISOString().slice(0,10);
+  const todayLessons = lessons.filter(l => l.date === todayStr);
+
+  if (todayLessons.length === 0) {
+    schedule.innerHTML = '<p class="empty">Сегодня занятий нет</p>';
     return;
   }
 
-  const lesson = {
-    title: titleInput.value,
-    start: startInput.value,
-    end: endInput.value
-  };
-
-  if (!baseSchedule[dayInput.value]) {
-    baseSchedule[dayInput.value] = [];
-  }
-
-  baseSchedule[dayInput.value].push(lesson);
-  localStorage.setItem("baseSchedule", JSON.stringify(baseSchedule));
-
-  modal.classList.add("hidden");
-  titleInput.value = "";
-  startInput.value = "";
-  endInput.value = "";
-
-  render();
-});
+  todayLessons.forEach(l => {
+    const div = document.createElement('div');
+    div.textContent = `${l.start} — ${l.subject} (${l.duration} мин)`;
+    schedule.appendChild(div);
+  });
+}
 
 render();
