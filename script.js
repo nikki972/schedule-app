@@ -111,7 +111,7 @@ function statusIcon(s){return s==='done'?'✅':s==='cancelled'?'❌':'🕒';}
 function nextStatus(s){return s==='planned'?'done':s==='done'?'cancelled':'planned';}
 
 // ====== РЕНДЕР УРОКОВ ======
-function renderLesson(container,l, showDate=false){
+function renderLesson(container,l){
   const d = document.createElement('div');
   d.className = 'lesson';
   d.innerHTML = `<div>${l.time} — ${l.subject} (${l.student})<br>${l.price} ₽</div>
@@ -129,43 +129,59 @@ function renderLesson(container,l, showDate=false){
     if(newDate && newTime){ l.date=newDate; l.time=newTime; saveAll(); }
   }
   d.querySelector('.delete').onclick = () => { 
-    if(confirm('Удалить это занятие?')) {
-      lessons = lessons.filter(x => x !== l); saveAll(); 
-    }
+    if(confirm('Удалить это занятие?')) { lessons = lessons.filter(x => x !== l); saveAll(); }
   }
   container.appendChild(d);
 }
 
-// ====== ЭКРАН СЕГОДНЯ ======
+// ====== ЭКРАН СЕГОДНЯ (с свайпами) ======
 let currentDay = new Date();
 const dayLabel = document.createElement('div');
-dayLabel.style.fontSize = '18px';
-dayLabel.style.marginBottom = '12px';
+dayLabel.className = 'dayLabel';
 todayScreen.prepend(dayLabel);
+
+const leftArrow = document.createElement('button');
+leftArrow.textContent = '←';
+const rightArrow = document.createElement('button');
+rightArrow.textContent = '→';
+const arrowWrapper = document.createElement('div');
+arrowWrapper.className = 'navArrows';
+arrowWrapper.appendChild(leftArrow);
+arrowWrapper.appendChild(rightArrow);
+dayLabel.prepend(arrowWrapper);
 
 function renderToday() {
   todayScreen.innerHTML = '';
   todayScreen.appendChild(dayLabel);
+  todayScreen.appendChild(arrowWrapper);
 
-  const options = { weekday: 'long', day: '2-digit', month: '2-digit', year:'numeric' };
-  const dayStr = currentDay.toLocaleDateString('ru-RU', options);
-  const dayName = currentDay.toLocaleDateString('ru-RU', { weekday:'long' });
+  const options = { weekday: 'long' };
+  const dayName = currentDay.toLocaleDateString('ru-RU', options);
   const dateNum = currentDay.toISOString().slice(0,10);
-  dayLabel.innerHTML = `${dayName} <span style="opacity:0.6;font-size:14px;">${dateNum}</span>`;
+  dayLabel.innerHTML = `<div class="navArrows">${leftArrow.outerHTML}${rightArrow.outerHTML}</div>${dayName} <span style="opacity:0.6;font-size:14px;">${dateNum}</span>`;
 
   const list = lessons.filter(l => l.date === dateNum);
   if(!list.length){ todayScreen.innerHTML += '<p>Нет занятий</p>'; return; }
   list.forEach(l => renderLesson(todayScreen, l));
+
+  // Навешиваем события на стрелки
+  document.querySelectorAll('.navArrows button')[0].onclick = () => { currentDay.setDate(currentDay.getDate()-1); renderToday(); }
+  document.querySelectorAll('.navArrows button')[1].onclick = () => { currentDay.setDate(currentDay.getDate()+1); renderToday(); }
 }
 
-// Листаем дни вправо/влево с клавишами (для iPhone можно использовать свайпы позже)
-document.addEventListener('keydown', e => {
-  if(e.key === 'ArrowLeft'){ currentDay.setDate(currentDay.getDate()-1); renderToday(); }
-  if(e.key === 'ArrowRight'){ currentDay.setDate(currentDay.getDate()+1); renderToday(); }
+// ====== Свайпы ======
+let touchStartX = null;
+todayScreen.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+todayScreen.addEventListener('touchend', e => {
+  if(touchStartX === null) return;
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  if(dx > 50) { currentDay.setDate(currentDay.getDate()-1); renderToday(); } // свайп вправо
+  if(dx < -50){ currentDay.setDate(currentDay.getDate()+1); renderToday(); } // свайп влево
+  touchStartX = null;
 });
 
 // ====== ЭКРАН ВСЕХ ЗАНЯТИЙ ======
-function renderAll(){ allScreen.innerHTML=''; lessons.forEach(l => renderLesson(allScreen,l,true)); }
+function renderAll(){ allScreen.innerHTML=''; lessons.forEach(l => renderLesson(allScreen,l)); }
 
 // ====== АНАЛИТИКА ======
 analyticsDate.value = new Date().toISOString().slice(0,10);
