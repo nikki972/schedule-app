@@ -1,3 +1,4 @@
+// --- Элементы формы и экрана ---
 const addBtn = document.getElementById('addBtn');
 const modal = document.getElementById('modal');
 const cancelBtn = document.getElementById('cancelBtn');
@@ -12,6 +13,7 @@ const priceSelect = document.getElementById('price');
 const schedule = document.getElementById('schedule');
 const todayDate = document.getElementById('todayDate');
 
+// --- Сегодняшняя дата ---
 const today = new Date();
 todayDate.textContent = today.toLocaleDateString('ru-RU', {
   weekday: 'long',
@@ -19,7 +21,7 @@ todayDate.textContent = today.toLocaleDateString('ru-RU', {
   month: 'long'
 });
 
-// --- Ученики ---
+// --- Список учеников с базовой ценой ---
 let students = [
   { id: 1, name: "Иван", price: 700 },
   { id: 2, name: "Мария", price: 1000 },
@@ -58,6 +60,7 @@ studentSelect.oninput = () => {
   if (selectedStudent && !priceSelect.value) priceSelect.value = selectedStudent.price;
 };
 
+// --- Сохранение нового занятия ---
 saveBtn.onclick = () => {
   const selectedStudent = students.find(s => s.id == studentSelect.value);
   const lesson = {
@@ -67,30 +70,34 @@ saveBtn.onclick = () => {
     date: dateInput.value,
     start: startTime.value,
     price: priceSelect.value || selectedStudent.price,
-    status: 'planned',
-    paid: false
+    status: 'planned', // запланировано
+    paid: false        // не оплачено
   };
 
   lessons.push(lesson);
   localStorage.setItem('lessons', JSON.stringify(lessons));
   modal.classList.add('hidden');
   render();
+  renderAnalytics();
 };
 
-// --- Статусы и оплата ---
+// --- Изменение статуса занятия ---
 function setStatus(index, newStatus) {
   lessons[index].status = newStatus;
   localStorage.setItem('lessons', JSON.stringify(lessons));
   render();
+  renderAnalytics();
 }
 
+// --- Переключение оплаты ---
 function togglePaid(index) {
   lessons[index].paid = !lessons[index].paid;
   localStorage.setItem('lessons', JSON.stringify(lessons));
   render();
+  renderAnalytics();
 }
 
-// --- Рендер ---
+// --- Отрисовка занятий на экран ---
 function render() {
   schedule.innerHTML = '';
 
@@ -141,4 +148,28 @@ function render() {
   });
 }
 
+// --- Первая отрисовка ---
 render();
+
+// --- Аналитика дохода ---
+const analyticsDateInput = document.getElementById('analyticsDate');
+const analyticsResult = document.getElementById('analyticsResult');
+
+// Устанавливаем сегодняшнюю дату по умолчанию
+analyticsDateInput.value = today.toISOString().slice(0,10);
+
+function renderAnalytics() {
+  const date = analyticsDateInput.value;
+  const lessonsForDate = lessons.filter(l => l.date === date && l.status === 'done');
+
+  const total = lessonsForDate.reduce((sum, l) => sum + Number(l.price || 0), 0);
+  const paidCount = lessonsForDate.filter(l => l.paid).length;
+  const totalCount = lessonsForDate.length;
+
+  analyticsResult.textContent = `Занятий проведено: ${totalCount} (оплачено: ${paidCount}) | Доход: ${total} ₽`;
+}
+
+analyticsDateInput.oninput = renderAnalytics;
+
+// --- Первичный рендер аналитики ---
+renderAnalytics();
