@@ -9,25 +9,36 @@ const dayInput = document.getElementById("dayInput");
 const startInput = document.getElementById("startInput");
 const endInput = document.getElementById("endInput");
 
-const weekdays = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+const weekdaysRu = [
+  "воскресенье",
+  "понедельник",
+  "вторник",
+  "среда",
+  "четверг",
+  "пятница",
+  "суббота"
+];
+
+const weekdaysKey = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday"
+];
 
 let baseSchedule = JSON.parse(localStorage.getItem("baseSchedule")) || {};
 
-function getTodayLessons() {
-  const now = new Date();
-  const dayKey = weekdays[now.getDay()];
-  return baseSchedule[dayKey] || [];
-}
-
 function render() {
   const now = new Date();
-  todayDateEl.textContent = now.toLocaleDateString("ru-RU", {
-    weekday: "long",
-    day: "numeric",
-    month: "long"
-  });
+  todayDateEl.textContent =
+    weekdaysRu[now.getDay()] + ", " + now.toLocaleDateString("ru-RU");
 
-  const lessons = getTodayLessons();
+  const dayKey = weekdaysKey[now.getDay()];
+  const lessons = baseSchedule[dayKey] || [];
+
   scheduleEl.innerHTML = "";
 
   if (lessons.length === 0) {
@@ -49,9 +60,17 @@ function render() {
   });
 }
 
-addBtn.onclick = () => modal.classList.remove("hidden");
+// --- обработчики ---
+addBtn.addEventListener("click", () => {
+  modal.classList.remove("hidden");
+});
 
-saveBtn.onclick = () => {
+saveBtn.addEventListener("click", () => {
+  if (!titleInput.value || !startInput.value || !endInput.value) {
+    alert("Заполни все поля");
+    return;
+  }
+
   const lesson = {
     title: titleInput.value,
     start: startInput.value,
@@ -71,6 +90,6 @@ saveBtn.onclick = () => {
   endInput.value = "";
 
   render();
-};
+});
 
 render();
