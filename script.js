@@ -6,9 +6,6 @@ const overlay = $('overlay');
 const closeMenu = $('closeMenu');
 
 const goToday = $('goToday');
-const goAll = $('goAll');
-const goAnalytics = $('goAnalytics');
-const goStudents = $('goStudents');
 
 const todayScreen = $('todayScreen');
 const allScreen = $('allScreen');
@@ -17,6 +14,7 @@ const studentsScreen = $('studentsScreen');
 
 const title = $('title');
 const todayDate = $('todayDate');
+const todayMark = $('todayMark');
 
 const prevDayBtn = $('prevDay');
 const nextDayBtn = $('nextDay');
@@ -42,7 +40,17 @@ function close() {
   overlay.classList.remove('show');
 }
 
-/* ===== DATE ===== */
+/* ===== DATE HELPERS ===== */
+const weekDays = [
+  'Воскресенье',
+  'Понедельник',
+  'Вторник',
+  'Среда',
+  'Четверг',
+  'Пятница',
+  'Суббота'
+];
+
 function formatDate(d) {
   return d.toLocaleDateString('ru-RU', {
     day: '2-digit',
@@ -51,8 +59,20 @@ function formatDate(d) {
   });
 }
 
+function isToday(d) {
+  const t = new Date();
+  return d.toDateString() === t.toDateString();
+}
+
 function updateHeader() {
+  title.textContent = weekDays[currentDate.getDay()];
   todayDate.textContent = formatDate(currentDate);
+
+  if (isToday(currentDate)) {
+    todayMark.classList.remove('hidden');
+  } else {
+    todayMark.classList.add('hidden');
+  }
 }
 
 /* ===== DAY CHANGE ===== */
@@ -65,33 +85,13 @@ function changeDay(delta) {
 prevDayBtn.onclick = () => changeDay(-1);
 nextDayBtn.onclick = () => changeDay(1);
 
-/* ===== SCREENS ===== */
-goToday.onclick = () => show('today');
-goAll.onclick = () => show('all');
-goAnalytics.onclick = () => show('analytics');
-goStudents.onclick = () => show('students');
-
-function show(screen) {
-  todayScreen.classList.add('hidden');
-  allScreen.classList.add('hidden');
-  analyticsScreen.classList.add('hidden');
-  studentsScreen.classList.add('hidden');
-
-  if (screen === 'today') {
-    todayScreen.classList.remove('hidden');
-    title.textContent = 'Сегодня';
-    updateHeader();
-    renderToday();
-  }
-
-  if (screen === 'all') {
-    allScreen.classList.remove('hidden');
-    title.textContent = 'Все занятия';
-    todayDate.textContent = '';
-  }
-
+/* ===== SCREEN ===== */
+goToday.onclick = () => {
+  todayScreen.classList.remove('hidden');
+  updateHeader();
+  renderToday();
   close();
-}
+};
 
 /* ===== TODAY ===== */
 function renderToday() {
@@ -122,10 +122,7 @@ todayScreen.addEventListener('touchstart', e => {
 todayScreen.addEventListener('touchend', e => {
   if (startX === null) return;
   const dx = e.changedTouches[0].clientX - startX;
-
-  if (Math.abs(dx) > 60) {
-    changeDay(dx < 0 ? 1 : -1);
-  }
+  if (Math.abs(dx) > 60) changeDay(dx < 0 ? 1 : -1);
   startX = null;
 }, { passive: true });
 
@@ -143,4 +140,6 @@ saveBtn.onclick = () => {
   renderToday();
 };
 
-show('today');
+/* INIT */
+updateHeader();
+renderToday();
