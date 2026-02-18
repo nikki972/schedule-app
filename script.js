@@ -102,4 +102,10 @@ saveBtn.onclick = () => {
     date: dateInput.value,
     time: timeInput.value
   });
-  modal.cla
+  modal.classList.remove('active');
+  renderToday();
+};
+
+/* INIT */
+updateHeader();
+renderToday();
