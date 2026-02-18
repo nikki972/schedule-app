@@ -51,7 +51,11 @@
 <option>Математика</option><option>Алгебра</option><option>Геометрия</option><option>Физика</option>
 </select></label>
 <label>Дата<input type="date" id="date"></label>
-<label>Начало<input type="time" id="startTime"></label>
+<label>Начало
+  <select id="startTime">
+    <!-- Варианты 00 и 30 минут -->
+  </select>
+</label>
 <label>Стоимость<select id="price">
 <option value="">По умолчанию</option>
 <option value="700">700 ₽</option>
@@ -66,5 +70,17 @@
 </div>
 
 <script src="script.js"></script>
+<script>
+  // Заполняем select времени: часы 00-23 и минуты 00/30
+  const timeSelect = document.getElementById('startTime');
+  for(let h=0; h<24; h++){
+    ['00','30'].forEach(min=>{
+      const opt = document.createElement('option');
+      opt.value = `${String(h).padStart(2,'0')}:${min}`;
+      opt.textContent = `${String(h).padStart(2,'0')}:${min}`;
+      timeSelect.appendChild(opt);
+    });
+  }
+</script>
 </body>
 </html>
