@@ -2,8 +2,6 @@ const modal = document.getElementById('modal');
 const addBtn = document.getElementById('addBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const saveBtn = document.getElementById('saveBtn');
-const schedule = document.getElementById('schedule');
-const themeToggle = document.getElementById('themeToggle');
 
 const student = document.getElementById('student');
 const subject = document.getElementById('subject');
@@ -11,15 +9,48 @@ const date = document.getElementById('date');
 const time = document.getElementById('startTime');
 const price = document.getElementById('price');
 
-const todayDate = document.getElementById('todayDate');
+const menuBtn = document.getElementById('menuBtn');
+const sideMenu = document.getElementById('sideMenu');
+const overlay = document.getElementById('overlay');
+const closeMenu = document.getElementById('closeMenu');
+const menuThemeToggle = document.getElementById('menuThemeToggle');
 
-/* ===== ЖЁСТКО ЗАКРЫВАЕМ МОДАЛКУ ===== */
+/* ===== Гарантия ===== */
 modal.classList.remove('active');
+sideMenu.classList.remove('open');
+overlay.classList.remove('show');
 
-/* ===== Дата ===== */
-const today = new Date();
-const todayStr = today.toISOString().slice(0,10);
-todayDate.textContent = today.toLocaleDateString('ru-RU');
+/* ===== Меню ===== */
+menuBtn.onclick = () => {
+  sideMenu.classList.add('open');
+  overlay.classList.add('show');
+};
+
+closeMenu.onclick = closeSideMenu;
+overlay.onclick = closeSideMenu;
+
+function closeSideMenu() {
+  sideMenu.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
+/* ===== Тема ===== */
+menuThemeToggle.onclick = () => {
+  document.body.classList.toggle('dark');
+  document.body.classList.toggle('light');
+};
+
+/* ===== Модалка ===== */
+addBtn.onclick = () => modal.classList.add('active');
+cancelBtn.onclick = () => modal.classList.remove('active');
+
+function check() {
+  saveBtn.disabled = !(student.value && date.value && time.value);
+}
+
+student.onchange = check;
+date.oninput = check;
+time.oninput = check;
 
 /* ===== Ученики ===== */
 const students = [
@@ -33,62 +64,3 @@ students.forEach(s => {
   o.textContent = s.name;
   student.appendChild(o);
 });
-
-/* ===== Данные ===== */
-let lessons = JSON.parse(localStorage.getItem('lessons') || '[]');
-
-/* ===== Кнопки ===== */
-addBtn.onclick = () => modal.classList.add('active');
-cancelBtn.onclick = () => modal.classList.remove('active');
-
-function check() {
-  saveBtn.disabled = !(student.value && date.value && time.value);
-}
-
-student.onchange = check;
-date.oninput = check;
-time.oninput = check;
-
-/* ===== Сохранение ===== */
-saveBtn.onclick = () => {
-  const s = students.find(x => x.id == student.value);
-
-  lessons.push({
-    student: s.name,
-    subject: subject.value,
-    date: date.value,
-    time: time.value,
-    price: price.value || s.price
-  });
-
-  localStorage.setItem('lessons', JSON.stringify(lessons));
-  modal.classList.remove('active');
-  render();
-};
-
-/* ===== Рендер ===== */
-function render() {
-  schedule.innerHTML = '';
-  const todayLessons = lessons.filter(l => l.date === todayStr);
-
-  if (!todayLessons.length) {
-    schedule.innerHTML = '<p class="empty">Сегодня занятий нет</p>';
-    return;
-  }
-
-  todayLessons.forEach(l => {
-    const d = document.createElement('div');
-    d.className = 'lesson';
-    d.textContent = `${l.time} — ${l.subject} (${l.student})`;
-    schedule.appendChild(d);
-  });
-}
-
-/* ===== Тема ===== */
-themeToggle.onclick = () => {
-  document.body.classList.toggle('dark');
-  document.body.classList.toggle('light');
-};
-
-/* ===== Старт ===== */
-render();
