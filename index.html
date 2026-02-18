@@ -8,10 +8,28 @@
 </head>
 <body class="dark">
 
+<!-- Затемнение -->
+<div id="overlay"></div>
+
+<!-- Боковое меню -->
+<nav id="sideMenu">
+  <h3>Меню</h3>
+
+  <button class="menu-btn">📊 Аналитика доходов</button>
+  <button class="menu-btn">📋 Все занятия</button>
+
+  <div class="menu-divider"></div>
+
+  <button id="menuThemeToggle" class="menu-btn">🌙 Тема</button>
+
+  <div class="menu-divider"></div>
+
+  <button id="closeMenu" class="menu-btn danger">Закрыть</button>
+</nav>
+
 <header>
+  <button id="menuBtn" class="burger">☰</button>
   <h1>Сегодня</h1>
-  <div id="todayDate"></div>
-  <button id="themeToggle">🌙</button>
 </header>
 
 <main id="schedule">
@@ -20,7 +38,7 @@
 
 <button id="addBtn">＋</button>
 
-<!-- МОДАЛКА -->
+<!-- Модальное окно -->
 <div id="modal">
   <div class="modal-content">
     <h2>Новое занятие</h2>
