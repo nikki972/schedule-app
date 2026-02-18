@@ -6,16 +6,13 @@
 <title>Расписание</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark">
+<body>
 
 <div id="overlay"></div>
 
 <nav id="sideMenu">
   <h3>Меню</h3>
   <button id="goToday" class="menu-btn">📅 Сегодня</button>
-  <button id="goAll" class="menu-btn">📋 Все занятия</button>
-  <button id="goAnalytics" class="menu-btn">📊 Аналитика</button>
-  <button id="goStudents" class="menu-btn">👨‍🎓 Ученики</button>
   <div class="menu-divider"></div>
   <button id="closeMenu" class="menu-btn danger">Закрыть</button>
 </nav>
@@ -40,6 +37,7 @@
 
 <button id="addBtn">＋</button>
 
+<!-- iOS sheet -->
 <div id="modal">
   <div class="sheet">
     <div class="sheet-header">
@@ -49,7 +47,10 @@
     </div>
 
     <div class="sheet-body">
-      <label>Ученик<input id="student"></label>
+      <label>
+        Ученик
+        <input id="student" placeholder="Имя ученика">
+      </label>
 
       <label>
         Предмет
@@ -59,8 +60,15 @@
         </select>
       </label>
 
-      <label>Дата<input type="date" id="date"></label>
-      <label>Время<input type="time" id="time" step="1800"></label>
+      <label>
+        Дата
+        <input type="date" id="date">
+      </label>
+
+      <label>
+        Время
+        <input type="time" id="time" step="1800">
+      </label>
     </div>
   </div>
 </div>
