@@ -99,7 +99,7 @@ header {
 
 #overlay.show { display: block; }
 
-/* ===== SWIPE LESSON (iOS-style) ===== */
+/* ===== LESSONS ===== */
 .lesson-wrapper {
   position: relative;
   overflow: hidden;
@@ -126,8 +126,7 @@ header {
   display: flex;
   gap: 14px;
   align-items: center;
-  transform: translateX(0);
-  transition: transform .25s ease;
+  transition: transform .25s, opacity .25s;
 }
 
 .lesson-time {
@@ -164,7 +163,7 @@ header {
 }
 
 /* ===== iOS SHEET ===== */
-#modal {
+#modal, #actionSheet {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.4);
@@ -173,7 +172,7 @@ header {
   z-index: 1001;
 }
 
-#modal.active { display: flex; }
+#modal.active, #actionSheet.active { display: flex; }
 
 .sheet {
   width: 100%;
@@ -208,9 +207,20 @@ header {
 }
 
 .sheet-body input,
-.sheet-body select {
+.sheet-body select,
+.sheet-body button {
   width: 100%;
   padding: 8px;
   border-radius: 8px;
   border: none;
+  margin-bottom: 10px;
+}
+
+.sheet-section {
+  margin-bottom: 14px;
+}
+
+.sheet-subtitle {
+  font-weight: 600;
+  margin-bottom: 6px;
 }
