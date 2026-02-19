@@ -108,14 +108,42 @@ function createLesson(l, index) {
 
   const row = document.createElement('div');
   row.className = 'lesson';
-  row.innerHTML = `
-    <div class="lesson-time">${l.time}</div>
-    <div class="lesson-info">
-      <div class="lesson-student">${l.student}</div>
-      <div class="lesson-subject">${l.subject}</div>
-    </div>
-  `;
 
+  function renderRowVisual() {
+    let classes = '';
+    let extra = '';
+
+    if (l.state === 'done') classes += ' done';
+    if (l.state === 'cancelled') classes += ' cancelled';
+    if (l.paid) extra += ' 💰';
+    if (l.paid === false && l.state !== 'cancelled') extra += ' ⏳';
+    if (l.state === 'done') extra += ' ✔︎';
+    if (l.state === 'cancelled') extra += ' ❌';
+
+    row.innerHTML = `
+      <div class="lesson-time">${l.time}</div>
+      <div class="lesson-info">
+        <div class="lesson-student">${l.student} ${extra}</div>
+        <div class="lesson-subject">${l.subject}</div>
+      </div>
+    `;
+
+    // приглушение или перечеркнутый текст через inline style
+    if (l.state === 'done') {
+      row.style.opacity = 0.5;
+      row.style.textDecoration = 'none';
+    } else if (l.state === 'cancelled') {
+      row.style.opacity = 0.4;
+      row.style.textDecoration = 'line-through';
+    } else {
+      row.style.opacity = 1;
+      row.style.textDecoration = 'none';
+    }
+  }
+
+  renderRowVisual();
+
+  /* iOS swipe */
   let startX = 0;
   let moved = false;
 
@@ -123,9 +151,7 @@ function createLesson(l, index) {
     startX = e.touches[0].clientX;
     moved = false;
 
-    if (openedRow && openedRow !== row) {
-      closeOpenedRow();
-    }
+    if (openedRow && openedRow !== row) closeOpenedRow();
   });
 
   row.addEventListener('touchmove', e => {
@@ -157,6 +183,26 @@ function createLesson(l, index) {
 
   wrap.append(del, row);
   todayScreen.appendChild(wrap);
+
+  /* iOS-style gesture menu for status & payment (tap row) */
+  row.addEventListener('click', () => {
+    if (openedRow === row) {
+      // показываем action sheet — тут можно расширять позже
+      const next = prompt(
+        'Статус: planned / done / cancelled\nОплата: yes / no / skip',
+        `${l.state}, ${l.paid === true ? 'yes' : l.paid === false ? 'no' : 'skip'}`
+      );
+      if (!next) return;
+      const parts = next.split(',').map(s => s.trim());
+      if (parts[0] && ['planned','done','cancelled'].includes(parts[0])) l.state = parts[0];
+      if (parts[1]) {
+        if (parts[1] === 'yes') l.paid = true;
+        else if (parts[1] === 'no') l.paid = false;
+      }
+      renderRowVisual();
+      save();
+    }
+  });
 }
 
 /* tap outside closes opened row (BUT NOT delete button) */
@@ -192,7 +238,9 @@ saveBtn.onclick = () => {
     student: student.value,
     subject: subject.value,
     date: date.value,
-    time: time.value
+    time: time.value,
+    state: 'planned',
+    paid: null
   });
   modal.classList.remove('active');
   save();
