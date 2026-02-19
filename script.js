@@ -26,7 +26,10 @@ const title = $('title');
 const todayDate = $('todayDate');
 const todayMark = $('todayMark');
 
-const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const days = [
+  'Воскресенье','Понедельник','Вторник',
+  'Среда','Четверг','Пятница','Суббота'
+];
 
 function renderHeader() {
   title.textContent = days[currentDate.getDay()];
@@ -58,6 +61,9 @@ $('goToday').onclick = () => {
 /* ===== LESSONS ===== */
 let lessons = JSON.parse(localStorage.getItem('lessons') || '[]');
 const todayScreen = $('todayScreen');
+
+/* iOS swipe state */
+let openedRow = null;
 
 function render() {
   renderHeader();
@@ -99,34 +105,52 @@ function createLesson(l, index) {
 
   let startX = 0;
   let currentX = 0;
-  let open = false;
 
   row.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
+
+    if (openedRow && openedRow !== row) {
+      openedRow.style.transform = 'translateX(0)';
+      openedRow = null;
+    }
   });
 
   row.addEventListener('touchmove', e => {
     const dx = e.touches[0].clientX - startX;
+
     if (dx < 0) {
       currentX = Math.max(dx, -90);
       row.style.transform = `translateX(${currentX}px)`;
+    }
+
+    if (dx > 30 && openedRow === row) {
+      row.style.transform = 'translateX(0)';
+      openedRow = null;
     }
   });
 
   row.addEventListener('touchend', () => {
     if (currentX < -45) {
       row.style.transform = 'translateX(-90px)';
-      open = true;
+      openedRow = row;
     } else {
       row.style.transform = 'translateX(0)';
-      open = false;
+      openedRow = null;
     }
-    currentX = open ? -90 : 0;
+    currentX = 0;
   });
 
   wrap.append(del, row);
   todayScreen.appendChild(wrap);
 }
+
+/* close swipe on tap outside */
+document.addEventListener('touchstart', e => {
+  if (!e.target.closest('.lesson') && openedRow) {
+    openedRow.style.transform = 'translateX(0)';
+    openedRow = null;
+  }
+});
 
 /* ===== ADD LESSON ===== */
 const modal = $('modal');
