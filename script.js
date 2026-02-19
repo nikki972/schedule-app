@@ -35,6 +35,7 @@ function createLesson(l,index){
   const wrap=document.createElement('div'); wrap.className='lesson-wrapper';
   const del=document.createElement('div'); del.className='lesson-delete'; del.textContent='Удалить';
   del.onclick=()=>{lessons.splice(index,1);save();}
+
   const row=document.createElement('div'); row.className='lesson';
   function renderRowVisual(){
     let extra=''; if(l.paid) extra+=' 💰'; if(l.paid===false && l.state!=='cancelled') extra+=' ⏳';
@@ -46,21 +47,40 @@ function createLesson(l,index){
   renderRowVisual();
 
   let startX=0,moved=false;
-  row.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;moved=false;if(openedRow && openedRow!==row) closeOpenedRow();});
+
+  row.addEventListener('touchstart',e=>{
+    startX=e.touches[0].clientX;
+    moved=false;
+    if(openedRow && openedRow!==row) closeOpenedRow();
+  });
+
   row.addEventListener('touchmove',e=>{
     const dx=e.touches[0].clientX-startX;
+    // свайп влево - delete
     if(dx<-10){moved=true;row.style.transform=`translateX(${Math.max(dx,-90)}px)`;}
-    if(dx>10){moved=true; openActionSheet(index); closeOpenedRow();}
   });
+
   row.addEventListener('touchend',()=>{
-    if(!moved) return;
     const cur=parseInt(row.style.transform.replace(/[^\-0-9]/g,''))||0;
     if(cur<-45) openRow(row); else closeOpenedRow();
+  });
+
+  // свайп вправо только из стандартного положения
+  row.addEventListener('touchstart', e=>{
+    startX=e.touches[0].clientX;
+    moved=false;
+  });
+  row.addEventListener('touchmove', e=>{
+    const dx=e.touches[0].clientX-startX;
+    if(dx>30 && parseInt(row.style.transform.replace(/[^\-0-9]/g,''))===0){
+      openActionSheet(index);
+    }
   });
 
   wrap.append(del,row); todayScreen.appendChild(wrap);
 }
 
+/* tap outside closes opened row */
 document.addEventListener('touchstart',e=>{
   if(openedRow && !e.target.closest('.lesson-wrapper') && !e.target.closest('.lesson-delete')) closeOpenedRow();
 });
