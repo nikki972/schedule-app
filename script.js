@@ -110,11 +110,7 @@ function createLesson(l, index) {
   row.className = 'lesson';
 
   function renderRowVisual() {
-    let classes = '';
     let extra = '';
-
-    if (l.state === 'done') classes += ' done';
-    if (l.state === 'cancelled') classes += ' cancelled';
     if (l.paid) extra += ' 💰';
     if (l.paid === false && l.state !== 'cancelled') extra += ' ⏳';
     if (l.state === 'done') extra += ' ✔︎';
@@ -128,17 +124,8 @@ function createLesson(l, index) {
       </div>
     `;
 
-    // приглушение или перечеркнутый текст через inline style
-    if (l.state === 'done') {
-      row.style.opacity = 0.5;
-      row.style.textDecoration = 'none';
-    } else if (l.state === 'cancelled') {
-      row.style.opacity = 0.4;
-      row.style.textDecoration = 'line-through';
-    } else {
-      row.style.opacity = 1;
-      row.style.textDecoration = 'none';
-    }
+    row.style.opacity = l.state === 'done' ? 0.5 : l.state === 'cancelled' ? 0.4 : 1;
+    row.style.textDecoration = l.state === 'cancelled' ? 'line-through' : 'none';
   }
 
   renderRowVisual();
@@ -150,18 +137,15 @@ function createLesson(l, index) {
   row.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
     moved = false;
-
     if (openedRow && openedRow !== row) closeOpenedRow();
   });
 
   row.addEventListener('touchmove', e => {
     const dx = e.touches[0].clientX - startX;
-
     if (dx < -10) {
       moved = true;
       row.style.transform = `translateX(${Math.max(dx, -90)}px)`;
     }
-
     if (dx > 10 && openedRow === row) {
       moved = true;
       closeOpenedRow();
@@ -170,48 +154,25 @@ function createLesson(l, index) {
 
   row.addEventListener('touchend', () => {
     if (!moved) return;
-
-    const currentTranslate =
-      parseInt(row.style.transform.replace(/[^\-0-9]/g, '')) || 0;
-
-    if (currentTranslate < -45) {
-      openRow(row);
-    } else {
-      closeOpenedRow();
-    }
+    const currentTranslate = parseInt(row.style.transform.replace(/[^\-0-9]/g, '')) || 0;
+    if (currentTranslate < -45) openRow(row);
+    else closeOpenedRow();
   });
 
   wrap.append(del, row);
   todayScreen.appendChild(wrap);
 
-  /* iOS-style gesture menu for status & payment (tap row) */
+  /* tap row → open action sheet */
   row.addEventListener('click', () => {
-    if (openedRow === row) {
-      // показываем action sheet — тут можно расширять позже
-      const next = prompt(
-        'Статус: planned / done / cancelled\nОплата: yes / no / skip',
-        `${l.state}, ${l.paid === true ? 'yes' : l.paid === false ? 'no' : 'skip'}`
-      );
-      if (!next) return;
-      const parts = next.split(',').map(s => s.trim());
-      if (parts[0] && ['planned','done','cancelled'].includes(parts[0])) l.state = parts[0];
-      if (parts[1]) {
-        if (parts[1] === 'yes') l.paid = true;
-        else if (parts[1] === 'no') l.paid = false;
-      }
-      renderRowVisual();
-      save();
-    }
+    if (openedRow !== row) return;
+    actionSheet.dataset.index = index;
+    actionSheet.classList.add('active');
   });
 }
 
-/* tap outside closes opened row (BUT NOT delete button) */
+/* tap outside closes opened row (not delete button) */
 document.addEventListener('touchstart', e => {
-  if (
-    openedRow &&
-    !e.target.closest('.lesson-wrapper') &&
-    !e.target.closest('.lesson-delete')
-  ) {
+  if (openedRow && !e.target.closest('.lesson-wrapper') && !e.target.closest('.lesson-delete')) {
     closeOpenedRow();
   }
 });
@@ -229,9 +190,7 @@ const time = $('time');
 
 [student, subject, date, time].forEach(i => i.oninput = check);
 
-function check() {
-  saveBtn.disabled = !(student.value && date.value && time.value);
-}
+function check() { saveBtn.disabled = !(student.value && date.value && time.value); }
 
 saveBtn.onclick = () => {
   lessons.push({
@@ -245,6 +204,28 @@ saveBtn.onclick = () => {
   modal.classList.remove('active');
   save();
 };
+
+/* ===== ACTION SHEET ===== */
+const actionSheet = $('actionSheet');
+const actionCancel = $('actionCancel');
+
+actionCancel.onclick = () => actionSheet.classList.remove('active');
+
+document.querySelectorAll('#actionSheet .action-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const index = actionSheet.dataset.index;
+    const lesson = lessons[index];
+    if (btn.dataset.state) lesson.state = btn.dataset.state;
+    if (btn.dataset.paid) {
+      if (btn.dataset.paid === 'true') lesson.paid = true;
+      else if (btn.dataset.paid === 'false') lesson.paid = false;
+      // skip → ничего не делаем
+    }
+    actionSheet.classList.remove('active');
+    render();
+    save();
+  });
+});
 
 function save() {
   localStorage.setItem('lessons', JSON.stringify(lessons));
