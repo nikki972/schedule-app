@@ -128,7 +128,7 @@ header {
   display: flex;
   gap: 14px;
   align-items: center;
-  transition: transform .25s, opacity .25s;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity .25s;
   z-index: 2;
   position: relative;
   cursor: grab;
