@@ -37,7 +37,7 @@
 
 <button id="addBtn">＋</button>
 
-<!-- iOS sheet -->
+<!-- iOS sheet для добавления занятий -->
 <div id="modal">
   <div class="sheet">
     <div class="sheet-header">
@@ -69,6 +69,32 @@
         Время
         <input type="time" id="time" step="1800">
       </label>
+    </div>
+  </div>
+</div>
+
+<!-- iOS action sheet для статусов и оплаты -->
+<div id="actionSheet">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div class="sheet-title">Изменить занятие</div>
+      <button id="actionCancel" class="sheet-cancel">Отмена</button>
+    </div>
+
+    <div class="sheet-body">
+      <div class="sheet-section">
+        <div class="sheet-subtitle">Статус</div>
+        <button class="action-btn" data-state="planned">Запланировано</button>
+        <button class="action-btn" data-state="done">Проведено</button>
+        <button class="action-btn" data-state="cancelled">Отменено</button>
+      </div>
+
+      <div class="sheet-section">
+        <div class="sheet-subtitle">Оплата</div>
+        <button class="action-btn" data-paid="true">Оплачено 💰</button>
+        <button class="action-btn" data-paid="false">Жду оплату ⏳</button>
+        <button class="action-btn" data-paid="skip">Не менять</button>
+      </div>
     </div>
   </div>
 </div>
