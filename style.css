@@ -102,9 +102,10 @@ header {
 /* ===== LESSONS ===== */
 .lesson-wrapper {
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* скрываем кнопку delete за строкой */
   margin: 10px 16px;
   border-radius: 14px;
+  z-index: 0;
 }
 
 .lesson-delete {
@@ -118,6 +119,7 @@ header {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  z-index: 1;
 }
 
 .lesson {
@@ -127,6 +129,9 @@ header {
   gap: 14px;
   align-items: center;
   transition: transform .25s, opacity .25s;
+  z-index: 2;
+  position: relative; /* чтобы быть выше кнопки delete */
+  cursor: grab;
 }
 
 .lesson-time {
@@ -201,26 +206,14 @@ header {
   padding: 0 16px;
 }
 
-.sheet-body label {
-  display: block;
-  margin-bottom: 14px;
-}
-
-.sheet-body input,
-.sheet-body select,
+.sheet-body label,
 .sheet-body button {
+  display: block;
+  margin-bottom: 10px;
   width: 100%;
   padding: 8px;
   border-radius: 8px;
   border: none;
-  margin-bottom: 10px;
 }
-
-.sheet-section {
-  margin-bottom: 14px;
-}
-
-.sheet-subtitle {
-  font-weight: 600;
-  margin-bottom: 6px;
-}
+.sheet-section { margin-bottom: 14px; }
+.sheet-subtitle { font-weight: 600; margin-bottom: 6px; }
