@@ -1,129 +1,164 @@
 const $ = id => document.getElementById(id);
 
-const todayScreen = $('todayScreen');
-const title = $('title');
-const todayDate = $('todayDate');
-const todayMark = $('todayMark');
-
-const prevDayBtn = $('prevDay');
-const nextDayBtn = $('nextDay');
-
+/* ===== MENU ===== */
 const menuBtn = $('menuBtn');
 const sideMenu = $('sideMenu');
 const overlay = $('overlay');
 const closeMenu = $('closeMenu');
 
-const addBtn = $('addBtn');
-const modal = $('modal');
-const saveBtn = $('saveBtn');
-const cancelBtn = $('cancelBtn');
-
-const studentInput = $('student');
-const subjectSelect = $('subject');
-const dateInput = $('date');
-const timeInput = $('time');
-
-let lessons = [];
-let currentDate = new Date();
-
-/* ===== MENU ===== */
 menuBtn.onclick = () => {
   sideMenu.classList.add('open');
   overlay.classList.add('show');
 };
 
-overlay.onclick = closeSideMenu;
-closeMenu.onclick = closeSideMenu;
+overlay.onclick = closeMenuFn;
+closeMenu.onclick = closeMenuFn;
 
-function closeSideMenu() {
+function closeMenuFn() {
   sideMenu.classList.remove('open');
   overlay.classList.remove('show');
 }
 
-/* ===== HEADER ===== */
+/* ===== DATE NAV ===== */
+let currentDate = new Date();
+
+const title = $('title');
+const todayDate = $('todayDate');
+const todayMark = $('todayMark');
+
 const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
 
-function updateHeader() {
+function renderHeader() {
   title.textContent = days[currentDate.getDay()];
   todayDate.textContent = currentDate.toLocaleDateString('ru-RU');
+
+  const today = new Date();
   todayMark.classList.toggle(
     'hidden',
-    currentDate.toDateString() !== new Date().toDateString()
+    today.toDateString() !== currentDate.toDateString()
   );
 }
 
-/* ===== DAY NAV ===== */
-function changeDay(d) {
-  currentDate.setDate(currentDate.getDate() + d);
-  updateHeader();
-  renderToday();
-}
-
-prevDayBtn.onclick = () => changeDay(-1);
-nextDayBtn.onclick = () => changeDay(1);
-
-/* ===== TODAY ===== */
-function renderToday() {
-  todayScreen.innerHTML = '';
-  const day = currentDate.toISOString().slice(0,10);
-
-  const list = lessons
-    .filter(l => l.date === day)
-    .sort((a, b) => a.time.localeCompare(b.time));
-
-  if (!list.length) {
-    todayScreen.innerHTML =
-      '<p style="padding:16px;opacity:.6">Нет занятий</p>';
-    return;
-  }
-
-  list.forEach(l => {
-    const row = document.createElement('div');
-    row.className = 'lesson';
-
-    row.innerHTML = `
-      <div class="lesson-time">${l.time}</div>
-      <div class="lesson-info">
-        <div class="lesson-student">${l.student}</div>
-        <div class="lesson-subject">${l.subject}</div>
-      </div>
-    `;
-
-    todayScreen.appendChild(row);
-  });
-}
-
-/* ===== SHEET ===== */
-function checkForm() {
-  saveBtn.disabled = !(
-    studentInput.value &&
-    dateInput.value &&
-    timeInput.value
-  );
-}
-
-[studentInput, dateInput, timeInput].forEach(i => i.oninput = checkForm);
-
-addBtn.onclick = () => {
-  modal.classList.add('active');
-  dateInput.value = currentDate.toISOString().slice(0,10);
-  subjectSelect.value = 'Математика';
-  checkForm();
+$('prevDay').onclick = () => {
+  currentDate.setDate(currentDate.getDate() - 1);
+  render();
 };
 
-cancelBtn.onclick = () => modal.classList.remove('active');
+$('nextDay').onclick = () => {
+  currentDate.setDate(currentDate.getDate() + 1);
+  render();
+};
+
+$('goToday').onclick = () => {
+  currentDate = new Date();
+  closeMenuFn();
+  render();
+};
+
+/* ===== LESSONS ===== */
+let lessons = JSON.parse(localStorage.getItem('lessons') || '[]');
+const todayScreen = $('todayScreen');
+
+function render() {
+  renderHeader();
+  renderLessons();
+}
+
+function renderLessons() {
+  todayScreen.innerHTML = '';
+  const dateStr = currentDate.toISOString().slice(0, 10);
+
+  lessons
+    .filter(l => l.date === dateStr)
+    .sort((a, b) => a.time.localeCompare(b.time))
+    .forEach((l, index) => createLesson(l, index));
+}
+
+function createLesson(l, index) {
+  const wrap = document.createElement('div');
+  wrap.className = 'lesson-wrapper';
+
+  const del = document.createElement('div');
+  del.className = 'lesson-delete';
+  del.textContent = 'Удалить';
+
+  del.onclick = () => {
+    lessons.splice(index, 1);
+    save();
+  };
+
+  const row = document.createElement('div');
+  row.className = 'lesson';
+  row.innerHTML = `
+    <div class="lesson-time">${l.time}</div>
+    <div class="lesson-info">
+      <div class="lesson-student">${l.student}</div>
+      <div class="lesson-subject">${l.subject}</div>
+    </div>
+  `;
+
+  let startX = 0;
+  let currentX = 0;
+  let open = false;
+
+  row.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+
+  row.addEventListener('touchmove', e => {
+    const dx = e.touches[0].clientX - startX;
+    if (dx < 0) {
+      currentX = Math.max(dx, -90);
+      row.style.transform = `translateX(${currentX}px)`;
+    }
+  });
+
+  row.addEventListener('touchend', () => {
+    if (currentX < -45) {
+      row.style.transform = 'translateX(-90px)';
+      open = true;
+    } else {
+      row.style.transform = 'translateX(0)';
+      open = false;
+    }
+    currentX = open ? -90 : 0;
+  });
+
+  wrap.append(del, row);
+  todayScreen.appendChild(wrap);
+}
+
+/* ===== ADD LESSON ===== */
+const modal = $('modal');
+$('addBtn').onclick = () => modal.classList.add('active');
+$('cancelBtn').onclick = () => modal.classList.remove('active');
+
+const saveBtn = $('saveBtn');
+const student = $('student');
+const subject = $('subject');
+const date = $('date');
+const time = $('time');
+
+[student, subject, date, time].forEach(i => i.oninput = check);
+
+function check() {
+  saveBtn.disabled = !(student.value && date.value && time.value);
+}
 
 saveBtn.onclick = () => {
   lessons.push({
-    student: studentInput.value,
-    subject: subjectSelect.value,
-    date: dateInput.value,
-    time: timeInput.value
+    student: student.value,
+    subject: subject.value,
+    date: date.value,
+    time: time.value
   });
   modal.classList.remove('active');
-  renderToday();
+  save();
 };
 
-/* INIT */
-updateHeader();
-renderToday();
+function save() {
+  localStorage.setItem('lessons', JSON.stringify(lessons));
+  render();
+}
+
+render();
