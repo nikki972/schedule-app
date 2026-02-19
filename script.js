@@ -65,6 +65,19 @@ const todayScreen = $('todayScreen');
 /* iOS swipe state */
 let openedRow = null;
 
+function closeOpenedRow() {
+  if (openedRow) {
+    openedRow.style.transform = 'translateX(0)';
+    openedRow = null;
+  }
+}
+
+function openRow(row) {
+  closeOpenedRow();
+  row.style.transform = 'translateX(-90px)';
+  openedRow = row;
+}
+
 function render() {
   renderHeader();
   renderLessons();
@@ -104,51 +117,56 @@ function createLesson(l, index) {
   `;
 
   let startX = 0;
-  let currentX = 0;
+  let moved = false;
 
   row.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
+    moved = false;
 
     if (openedRow && openedRow !== row) {
-      openedRow.style.transform = 'translateX(0)';
-      openedRow = null;
+      closeOpenedRow();
     }
   });
 
   row.addEventListener('touchmove', e => {
     const dx = e.touches[0].clientX - startX;
 
-    if (dx < 0) {
-      currentX = Math.max(dx, -90);
-      row.style.transform = `translateX(${currentX}px)`;
+    if (dx < -10) {
+      moved = true;
+      row.style.transform = `translateX(${Math.max(dx, -90)}px)`;
     }
 
-    if (dx > 30 && openedRow === row) {
-      row.style.transform = 'translateX(0)';
-      openedRow = null;
+    if (dx > 10 && openedRow === row) {
+      moved = true;
+      closeOpenedRow();
     }
   });
 
   row.addEventListener('touchend', () => {
-    if (currentX < -45) {
-      row.style.transform = 'translateX(-90px)';
-      openedRow = row;
+    if (!moved) return;
+
+    const currentTranslate =
+      parseInt(row.style.transform.replace(/[^\-0-9]/g, '')) || 0;
+
+    if (currentTranslate < -45) {
+      openRow(row);
     } else {
-      row.style.transform = 'translateX(0)';
-      openedRow = null;
+      closeOpenedRow();
     }
-    currentX = 0;
   });
 
   wrap.append(del, row);
   todayScreen.appendChild(wrap);
 }
 
-/* close swipe on tap outside */
+/* tap outside closes opened row (BUT NOT delete button) */
 document.addEventListener('touchstart', e => {
-  if (!e.target.closest('.lesson') && openedRow) {
-    openedRow.style.transform = 'translateX(0)';
-    openedRow = null;
+  if (
+    openedRow &&
+    !e.target.closest('.lesson-wrapper') &&
+    !e.target.closest('.lesson-delete')
+  ) {
+    closeOpenedRow();
   }
 });
 
